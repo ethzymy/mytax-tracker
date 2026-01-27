@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Main paw pad -->
+  <ellipse cx="16" cy="20" rx="11" ry="9" fill="#FF9F43"/>
+  
+  <!-- Toe beans (top) -->
+  <ellipse cx="8" cy="9" rx="5" ry="6" fill="#FF9F43"/>
+  <ellipse cx="16" cy="6" rx="5" ry="6" fill="#FF9F43"/>
+  <ellipse cx="24" cy="9" rx="5" ry="6" fill="#FF9F43"/>
+  
+  <!-- Main pad (dark brown/orange) -->
+  <ellipse cx="16" cy="21" rx="6" ry="5" fill="#D35400"/>
+  
+  <!-- Toe bean pads (dark) -->
+  <ellipse cx="8" cy="9" rx="2.5" ry="3" fill="#D35400"/>
+  <ellipse cx="16" cy="7" rx="2.5" ry="3" fill="#D35400"/>
+  <ellipse cx="24" cy="9" rx="2.5" ry="3" fill="#D35400"/>
+</svg>

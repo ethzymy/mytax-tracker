@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Pointed cat ears -->
+  <path d="M10 30 L18 6 L26 30" fill="#FF9F43"/>
+  <path d="M38 30 L46 6 L54 30" fill="#FF9F43"/>
+  
+  <!-- Inner ears -->
+  <path d="M14 28 L18 12 L22 28" fill="#FFBB6C"/>
+  <path d="M42 28 L46 12 L50 28" fill="#FFBB6C"/>
+  
+  <!-- Cat face - rounded with slight cheeks -->
+  <path d="M8 32 Q8 58 32 58 Q56 58 56 32 Q56 24 32 24 Q8 24 8 32" fill="#FF9F43"/>
+  
+  <!-- Forehead stripes -->
+  <line x1="32" y1="26" x2="32" y2="35" stroke="#E67E22" stroke-width="3" stroke-linecap="round"/>
+  <line x1="26" y1="27" x2="27" y2="34" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="38" y1="27" x2="37" y2="34" stroke="#E67E22" stroke-width="2.5" stroke-linecap="round"/>
+  
+  <!-- Eyes - simple filled dots -->
+  <circle cx="24" cy="40" r="2.5" fill="#4A4A4A"/>
+  <circle cx="40" cy="40" r="2.5" fill="#4A4A4A"/>
+  
+  <!-- Nose - small oval -->
+  <ellipse cx="32" cy="46" rx="2.5" ry="2" fill="#E67E22"/>
+  
+  <!-- Mouth line from nose -->
+  <line x1="32" y1="48" x2="32" y2="50" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Smile curves -->
+  <path d="M26 51 Q29 54 32 50" fill="none" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="M38 51 Q35 54 32 50" fill="none" stroke="#4A4A4A" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Whiskers left -->
+  <line x1="6" y1="42" x2="18" y2="44" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="6" y1="47" x2="18" y2="47" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="6" y1="52" x2="18" y2="50" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round"/>
+  
+  <!-- Whiskers right -->
+  <line x1="58" y1="42" x2="46" y2="44" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="58" y1="47" x2="46" y2="47" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="58" y1="52" x2="46" y2="50" stroke="#E67E22" stroke-width="1.5" stroke-linecap="round"/>
+</svg>

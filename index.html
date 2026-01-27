@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Malaysia Tax Calculator - Track your income tax and tax reliefs in real-time">
+    <meta name="theme-color" content="#00d4d4">
+    <title>MYTax Tracker - Malaysia Tax Calculator</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+    <!-- Disclaimer Modal -->
+    <div class="modal-overlay" id="disclaimerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>⚠️ Disclaimer / 免责声明</h2>
+            </div>
+            <div class="modal-body">
+                <p><strong>English:</strong> This calculator is for reference purposes only. Tax calculations are based
+                    on publicly available LHDN guidelines and may not reflect your actual tax liability. Please consult
+                    a qualified tax professional or LHDN for official tax advice.</p>
+                <br>
+                <p><strong>中文:</strong> 此计算器仅供参考。税务计算基于LHDN公开指南，可能与您的实际税务责任有所不同。请咨询专业税务顾问或LHDN获取正式税务建议。</p>
+                <br>
+                <p><strong>Bahasa:</strong> Kalkulator ini hanya untuk rujukan sahaja. Pengiraan cukai adalah
+                    berdasarkan garis panduan LHDN yang tersedia secara umum. Sila dapatkan nasihat cukai rasmi daripada
+                    profesional cukai atau LHDN.</p>
+            </div>
+            <div class="modal-footer">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="dontShowAgain">
+                    Don't show again / 不再显示
+                </label>
+                <button class="btn btn-primary" id="acceptDisclaimer">I Understand / 我明白</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">📋</span>
+                <h1>MYTax Tracker</h1>
+            </div>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                <span class="theme-icon">🌙</span>
+            </button>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tab-nav" id="tabNav">
+            <button class="tab-btn active" data-tab="setup">
+                <span class="tab-icon">⚙️</span>
+                <span>Setup</span>
+            </button>
+            <button class="tab-btn" data-tab="income" id="tabIncome">
+                <span class="tab-icon">💵</span>
+                <span>Income</span>
+            </button>
+            <button class="tab-btn" data-tab="reliefs" id="tabReliefs">
+                <span class="tab-icon">💰</span>
+                <span>Reliefs</span>
+            </button>
+            <button class="tab-btn" data-tab="summary" id="tabSummary">
+                <span class="tab-icon">📋</span>
+                <span>Summary</span>
+            </button>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Setup Tab (Landing Page) -->
+            <section class="tab-content active" id="setup-tab">
+                <div class="card">
+                    <h2 class="card-title">Welcome to MYTax Tracker</h2>
+                    <p class="card-subtitle">Let's set up your tax profile</p>
+
+
+                    <div class="form-group">
+                        <label>How do you earn income?</label>
+                        <div class="income-type-selector">
+                            <label class="income-type-option">
+                                <input type="radio" name="incomeType" value="employee" checked>
+                                <div class="income-type-card">
+                                    <span class="income-type-icon">👤</span>
+                                    <span class="income-type-label">Employee</span>
+                                    <span class="income-type-desc">Salary earner</span>
+                                </div>
+                            </label>
+                            <label class="income-type-option">
+                                <input type="radio" name="incomeType" value="enterprise">
+                                <div class="income-type-card">
+                                    <span class="income-type-icon">🏪</span>
+                                    <span class="income-type-label">Enterprise</span>
+                                    <span class="income-type-desc">Sole Prop / Partnership</span>
+                                </div>
+                            </label>
+                            <label class="income-type-option">
+                                <input type="radio" name="incomeType" value="company">
+                                <div class="income-type-card">
+                                    <span class="income-type-icon">🏢</span>
+                                    <span class="income-type-label">Company</span>
+                                    <span class="income-type-desc">Sdn Bhd / LLP</span>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Personal Info (for personal tax types) -->
+                    <div id="personalInfoSection">
+                        <div class="form-group">
+                            <label for="residencyStatus">Residency Status:</label>
+                            <select id="residencyStatus" class="form-select">
+                                <option value="resident">Tax Resident</option>
+                                <option value="non-resident">Non-Resident</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="maritalStatus">Marital Status:</label>
+                            <select id="maritalStatus" class="form-select">
+                                <option value="single">Single</option>
+                                <option value="married">Married</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group hidden" id="spouseSection">
+                            <label for="spouseWorking">Spouse's Employment:</label>
+                            <select id="spouseWorking" class="form-select">
+                                <option value="no">Not Working / No Income</option>
+                                <option value="yes">Working / Has Income</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Company Info (for corporate types) -->
+                    <div id="companyInfoSection" class="hidden">
+                        <div class="form-group">
+                            <label for="companyType">Company Type:</label>
+                            <select id="companyType" class="form-select">
+                                <option value="sdn-bhd">Sdn Bhd (Private Limited)</option>
+                                <option value="llp">LLP (Limited Liability Partnership)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="paidUpCapital">Paid-up Capital:</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">RM</span>
+                                <input type="number" id="paidUpCapital" class="form-input" placeholder="e.g. 100000"
+                                    min="0" step="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-lg btn-block" id="startBtn">
+                        Continue →
+                    </button>
+
+                </div>
+            </section>
+
+            <!-- Income Tab -->
+            <section class="tab-content" id="income-tab">
+                <!-- Employee Income Section -->
+                <div id="employeeIncomeSection">
+                    <div class="card">
+                        <h2 class="card-title">💰 Employment Income</h2>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label for="monthlySalary">Monthly Salary:</label>
+                                <div class="input-with-prefix">
+                                    <span class="input-prefix">RM</span>
+                                    <input type="number" id="monthlySalary" class="form-input" placeholder="e.g. 5000"
+                                        min="0" step="100">
+                                </div>
+                            </div>
+                            <div class="form-group flex-small">
+                                <label for="bonusMonths">Bonus (months):</label>
+                                <input type="number" id="bonusMonths" class="form-input" placeholder="e.g. 2" min="0"
+                                    max="12" step="0.5" value="0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label for="otherIncome">Other Annual Income:</label>
+                                <div class="input-with-prefix">
+                                    <span class="input-prefix">RM</span>
+                                    <input type="number" id="otherIncome" class="form-input"
+                                        placeholder="Commission, rental, etc." min="0" step="100" value="0">
+                                </div>
+                            </div>
+                            <div class="form-group flex-small">
+                                <label for="epfRate">EPF Rate:</label>
+                                <div class="input-with-suffix">
+                                    <input type="number" id="epfRate" class="form-input" placeholder="11" min="0"
+                                        max="100" step="1" value="11">
+                                    <span class="input-suffix">%</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Auto-calculated Summary -->
+                        <div class="income-summary">
+                            <div class="income-summary-row">
+                                <span>Salary (12 months)</span>
+                                <span id="annualSalary">RM 0</span>
+                            </div>
+                            <div class="income-summary-row">
+                                <span>Bonus</span>
+                                <span id="annualBonus">RM 0</span>
+                            </div>
+                            <div class="income-summary-row">
+                                <span>Other Income</span>
+                                <span id="otherIncomeDisplay">RM 0</span>
+                            </div>
+                            <div class="income-summary-row total">
+                                <span>Gross Annual Income</span>
+                                <span id="annualIncome">RM 0</span>
+                            </div>
+                            <div class="income-summary-row">
+                                <span>EPF Contribution</span>
+                                <span id="epfContribution">- RM 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Tax Estimate -->
+                    <div class="card highlight-card">
+                        <h2 class="card-title">Quick Estimate</h2>
+                        <div class="estimate-grid">
+                            <div class="estimate-item">
+                                <span class="estimate-label">Chargeable Income</span>
+                                <span class="estimate-value" id="chargeableIncome">RM 0</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label">Tax Payable</span>
+                                <span class="estimate-value highlight" id="taxPayable">RM 0</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label">Effective Tax Rate</span>
+                                <span class="estimate-value" id="effectiveRate">0%</span>
+                            </div>
+                        </div>
+                        <p class="estimate-note">* Add tax reliefs to reduce your tax</p>
+                    </div>
+                </div>
+
+                <!-- Business Income Section (Enterprise/Company) -->
+                <div id="businessIncomeSection" style="display: none;">
+                    <div class="card">
+                        <h2 class="card-title">🏪 Business Income</h2>
+
+                        <div class="form-group">
+                            <label for="annualRevenue">Annual Business Revenue:</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">RM</span>
+                                <input type="number" id="annualRevenue" class="form-input" placeholder="e.g. 500000"
+                                    min="0" step="1000">
+                            </div>
+                            <span class="form-hint">Total revenue before deducting expenses</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="chargeableBusinessIncome">Chargeable Business Income:</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">RM</span>
+                                <input type="number" id="chargeableBusinessIncome" class="form-input"
+                                    placeholder="Auto-calculated" min="0" step="1000" readonly>
+                            </div>
+                            <span class="form-hint">Revenue minus allowable expenses (auto-calculated)</span>
+                        </div>
+                    </div>
+
+                    <!-- Business Tax Estimate -->
+                    <div class="card highlight-card">
+                        <h2 class="card-title">Business Tax Estimate</h2>
+                        <div class="estimate-grid">
+                            <div class="estimate-item">
+                                <span class="estimate-label">SME Status</span>
+                                <span class="estimate-value" id="smeStatus">Eligible ✓</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label">Tax Payable</span>
+                                <span class="estimate-value highlight" id="businessTaxPayable">RM 0</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label">Effective Rate</span>
+                                <span class="estimate-value" id="businessEffectiveRate">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Allowable Expenses Tracker -->
+                    <div class="card" id="businessDeductionsCard">
+                        <h2 class="card-title">💼 Allowable Expenses</h2>
+                        <p class="card-subtitle">Track your business expenses to reduce taxable income</p>
+
+                        <div class="relief-summary">
+                            <div class="relief-summary-item">
+                                <span class="relief-summary-label">Total Deductions</span>
+                                <span class="relief-summary-value" id="totalBusinessDeductions">RM 0</span>
+                            </div>
+                            <div class="relief-summary-item">
+                                <span class="relief-summary-label">Tax Saved</span>
+                                <span class="relief-summary-value highlight" id="businessDeductionSavings">RM 0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Deduction Categories -->
+                    <div class="deduction-categories" id="businessDeductionCategories">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- Tax Reliefs Tab -->
+
+            <section class="tab-content" id="reliefs-tab">
+                <div class="card">
+                    <h2 class="card-title">Tax Reliefs Tracker</h2>
+                    <p class="card-subtitle">Track your spending to maximize tax savings</p>
+
+                    <div class="relief-summary">
+                        <div class="relief-summary-item">
+                            <span class="relief-summary-label">Total Reliefs Used</span>
+                            <span class="relief-summary-value" id="totalReliefsUsed">RM 0</span>
+                        </div>
+                        <div class="relief-summary-item">
+                            <span class="relief-summary-label">Potential Savings</span>
+                            <span class="relief-summary-value highlight" id="potentialSavings">RM 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relief Categories -->
+                <div class="relief-categories" id="reliefCategories">
+                    <!-- Will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Summary Tab -->
+            <section class="tab-content" id="summary-tab">
+                <!-- Total Tax Overview -->
+                <div class="card highlight-card">
+                    <h2 class="card-title">📊 Total Tax Overview YA 2024</h2>
+                    <div class="estimate-grid">
+                        <div class="estimate-item">
+                            <span class="estimate-label">Total Tax Payable</span>
+                            <span class="estimate-value highlight" id="totalTaxPayable">RM 0</span>
+                        </div>
+                        <div class="estimate-item">
+                            <span class="estimate-label">Total Savings</span>
+                            <span class="estimate-value" id="totalSavings">RM 0</span>
+                        </div>
+                        <div class="estimate-item">
+                            <span class="estimate-label">Monthly Estimate</span>
+                            <span class="estimate-value" id="monthlyTax">RM 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Personal Tax Summary -->
+                <div class="card">
+                    <h2 class="card-title">👤 Personal Tax</h2>
+                    <div class="summary-breakdown">
+                        <div class="summary-row">
+                            <span>Gross Annual Income</span>
+                            <span id="summaryIncome">RM 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Less: EPF Contribution</span>
+                            <span id="summaryEpf">- RM 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Less: Tax Reliefs</span>
+                            <span id="summaryReliefs">- RM 0</span>
+                        </div>
+                        <div class="summary-row total">
+                            <span>Chargeable Income</span>
+                            <span id="summaryChargeable">RM 0</span>
+                        </div>
+                        <div class="summary-row highlight">
+                            <span>Personal Tax</span>
+                            <span id="summaryTax">RM 0</span>
+                        </div>
+                    </div>
+                    <div class="tax-bracket-info">
+                        <h3>Your Tax Bracket</h3>
+                        <div class="bracket-display" id="taxBracketDisplay">
+                            <span class="bracket-rate">0%</span>
+                            <span class="bracket-range">RM 0 - RM 5,000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Business Tax Summary -->
+                <div class="card" id="businessSummaryCard">
+                    <h2 class="card-title">🏢 Business Tax</h2>
+                    <div class="summary-breakdown">
+                        <div class="summary-row">
+                            <span>Business Type</span>
+                            <span id="summaryBusinessType">Sdn Bhd</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Chargeable Business Income</span>
+                            <span id="summaryBusinessIncome">RM 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>SME Status</span>
+                            <span id="summarySmeStatus">N/A</span>
+                        </div>
+                        <div class="summary-row highlight">
+                            <span>Business Tax</span>
+                            <span id="summaryBusinessTax">RM 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Savings Breakdown -->
+                <div class="card">
+                    <h2 class="card-title">💰 Your Savings</h2>
+                    <div class="summary-breakdown">
+                        <div class="summary-row">
+                            <span>From Tax Reliefs</span>
+                            <span id="savingsFromReliefs" class="text-success">RM 0</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>From SME Rate (vs 24%)</span>
+                            <span id="savingsFromSme" class="text-success">RM 0</span>
+                        </div>
+                        <div class="summary-row total highlight">
+                            <span>Total Potential Savings</span>
+                            <span id="totalPotentialSavings" class="text-success">RM 0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Relief Progress -->
+                <div class="card">
+                    <h2 class="card-title">📈 Relief Usage Progress</h2>
+                    <div class="relief-progress-list" id="reliefProgressList">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Export Section -->
+                <div class="card highlight-card">
+                    <h2 class="card-title">📥 Export Tax Record</h2>
+                    <p class="export-description">Download your complete tax record for official submission to LHDN.</p>
+                    <div class="export-buttons">
+                        <button class="btn btn-primary btn-lg" id="exportExcel" onclick="app.exportToExcel()">
+                            <span class="btn-icon">📊</span>
+                            <span>Download Excel (.xlsx)</span>
+                        </button>
+                    </div>
+                    <p class="export-note">File includes: Income details, tax reliefs, business deductions, and
+                        calculated tax.</p>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Based on LHDN Income Tax Act 1967 (YA 2024/2025)</p>
+            <p class="disclaimer">For reference only. Consult a tax professional for advice.</p>
+            <p><a href="privacy.html" style="color: var(--accent-primary);">Privacy Policy</a></p>
+        </footer>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/tax-data.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
