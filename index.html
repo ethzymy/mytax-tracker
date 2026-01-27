@@ -335,23 +335,16 @@
                     <h2 class="card-title">Tax Reliefs Tracker</h2>
                     <p class="card-subtitle">Track your spending to maximize tax savings</p>
 
-                    <div class="info-note"
-                        style="background: rgba(0, 212, 212, 0.1); border: 2px solid var(--accent-primary); border-radius: var(--radius-md); padding: var(--spacing-md); margin: var(--spacing-md) 0;">
-                        <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">
-                            <strong>📌 Note:</strong> Every Malaysian tax resident is automatically entitled to
-                            <strong>RM9,000 Individual Relief</strong> for themselves and dependent relatives. This is
-                            included by default in your tax calculation.
-                        </p>
-                        <p style="margin: 0.5rem 0 0 0; font-size: 0.85rem; color: var(--text-muted);">
-                            <em>Pelepasan individu sebanyak RM9,000 untuk diri sendiri dan saudara-mara tanggungan
-                                secara automatik disertakan.</em>
-                        </p>
-                    </div>
-
                     <div class="relief-summary">
                         <div class="relief-summary-item">
-                            <span class="relief-summary-label">Total Reliefs Used</span>
+                            <span class="relief-summary-label">
+                                Total Reliefs Used
+                                <span class="info-icon" id="reliefInfoIcon" title="Click for info">ⓘ</span>
+                            </span>
                             <span class="relief-summary-value" id="totalReliefsUsed">RM 0</span>
+                            <div class="info-tooltip" id="reliefInfoTooltip">
+                                Includes RM9,000 automatic Individual Relief for yourself and dependent relatives.
+                            </div>
                         </div>
                         <div class="relief-summary-item">
                             <span class="relief-summary-label">Potential Savings</span>
@@ -359,6 +352,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Relief Categories -->
                 <div class="relief-categories" id="reliefCategories">

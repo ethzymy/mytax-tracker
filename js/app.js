@@ -13,6 +13,7 @@ class MYTaxApp {
         this.incomeType = 'employee'; // Default
         this.checkDisclaimer();
         this.bindEvents();
+        this.bindInfoTooltips();
         this.updateSetupUI();
         this.registerServiceWorker();
     }
@@ -36,6 +37,24 @@ class MYTaxApp {
             }
             modal.classList.add('hidden');
         });
+    }
+
+    // ===== Info Tooltip =====
+    bindInfoTooltips() {
+        const infoIcon = document.getElementById('reliefInfoIcon');
+        const tooltip = document.getElementById('reliefInfoTooltip');
+
+        if (infoIcon && tooltip) {
+            infoIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                tooltip.classList.toggle('show');
+            });
+
+            // Close tooltip when clicking outside
+            document.addEventListener('click', () => {
+                tooltip.classList.remove('show');
+            });
+        }
     }
 
 

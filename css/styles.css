@@ -124,6 +124,50 @@
     cursor: pointer;
 }
 
+/* ===== Info Icon & Tooltip ===== */
+.info-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin-left: 6px;
+    font-size: 14px;
+    color: var(--accent-primary);
+    cursor: pointer;
+    vertical-align: middle;
+    transition: transform 0.2s;
+}
+
+.info-icon:hover {
+    transform: scale(1.2);
+}
+
+.relief-summary-item {
+    position: relative;
+}
+
+.info-tooltip {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--bg-card);
+    border: 2px solid var(--accent-primary);
+    border-radius: var(--radius-md);
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    z-index: 10;
+    box-shadow: var(--shadow);
+}
+
+.info-tooltip.show {
+    display: block;
+}
+
 /* ===== Reset & Base ===== */
 *,
 *::before,
