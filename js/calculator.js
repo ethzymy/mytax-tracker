@@ -90,8 +90,8 @@ class TaxCalculator {
      * @returns {object} Chargeable income calculation
      */
     calculateChargeableIncome(grossIncome, epfContribution = 0, reliefs = {}) {
-        // Auto-calculate EPF if not provided (11% of gross)
-        const epf = epfContribution || Math.min(grossIncome * this.taxData.epfEmployeeRate, 4000);
+        // Use provided EPF or 0 if not specified (don't auto-calculate)
+        const epf = epfContribution !== undefined && epfContribution !== null ? epfContribution : 0;
 
         // Sum all reliefs
         let totalReliefs = 0;
