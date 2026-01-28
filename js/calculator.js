@@ -101,6 +101,7 @@ class TaxCalculator {
         const selfRelief = this.taxData.taxReliefs.automatic[0].limit;
         totalReliefs += selfRelief;
         reliefBreakdown.push({
+            id: 'self',
             name: 'Self & Dependent Relatives',
             amount: selfRelief
         });
@@ -113,6 +114,7 @@ class TaxCalculator {
                     const clampedAmount = Math.min(amount, reliefInfo.limit);
                     totalReliefs += clampedAmount;
                     reliefBreakdown.push({
+                        id: reliefId,
                         name: reliefInfo.name,
                         amount: clampedAmount,
                         limit: reliefInfo.limit

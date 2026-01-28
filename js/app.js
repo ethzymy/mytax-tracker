@@ -267,6 +267,12 @@ class MYTaxApp {
         if (smeSavingsRow) {
             smeSavingsRow.style.display = this.incomeType === 'company' ? 'flex' : 'none';
         }
+
+        // Monthly savings tip: only for employee and enterprise
+        const monthlySavingsTipRow = document.getElementById('monthlySavingsTipRow');
+        if (monthlySavingsTipRow) {
+            monthlySavingsTipRow.style.display = this.incomeType === 'company' ? 'none' : 'flex';
+        }
     }
 
     // ===== Tab Navigation =====
@@ -819,6 +825,10 @@ class MYTaxApp {
         update('totalPotentialSavings', `RM ${totalSavings.toLocaleString()}`);
         update('totalSavings', `RM ${totalSavings.toLocaleString()}`);
 
+        // Monthly savings calculation
+        const monthlySavings = totalSavings / 12;
+        update('monthlySavingsValue', `RM ${monthlySavings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`);
+
         // Update bracket display
         const bracketDisplay = document.getElementById('taxBracketDisplay');
         if (bracketDisplay && result.bracket) {
@@ -836,21 +846,34 @@ class MYTaxApp {
         const container = document.getElementById('reliefProgressList');
         if (!container) return;
 
-        container.innerHTML = result.reliefBreakdown.map(relief => `
-            <div class="relief-progress-item">
-                <div class="relief-progress-header">
-                    <span class="relief-progress-name">${relief.name}</span>
-                    <span class="relief-progress-amount">RM ${relief.amount.toLocaleString()}${relief.limit ? ` / ${relief.limit.toLocaleString()}` : ''}</span>
-                </div>
-                ${relief.limit ? `
-                <div class="progress-container">
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${Math.min(100, (relief.amount / relief.limit) * 100)}%"></div>
+        const lang = this.lang || 'en';
+        container.innerHTML = result.reliefBreakdown.map(relief => {
+            // Find the original relief object to get translated names
+            const originalRelief = this.calculator.findReliefById(relief.id) ||
+                (relief.id === 'self' ? TAX_DATA.taxReliefs.automatic[0] : null);
+
+            let displayName = relief.name;
+            if (originalRelief) {
+                displayName = lang === 'ms' ? (originalRelief.nameMy || originalRelief.name) :
+                    (lang === 'zh' ? (originalRelief.nameCn || originalRelief.name) : originalRelief.name);
+            }
+
+            return `
+                <div class="relief-progress-item">
+                    <div class="relief-progress-header">
+                        <span class="relief-progress-name">${displayName}</span>
+                        <span class="relief-progress-amount">RM ${relief.amount.toLocaleString()}${relief.limit ? ` / ${relief.limit.toLocaleString()}` : ''}</span>
                     </div>
+                    ${relief.limit ? `
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${Math.min(100, (relief.amount / relief.limit) * 100)}%"></div>
+                        </div>
+                    </div>
+                    ` : ''}
                 </div>
-                ` : ''}
-            </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     updateCategoryTotals() {
