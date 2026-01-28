@@ -135,33 +135,51 @@ const TAX_DATA = {
             },
             {
                 id: 'serious_disease',
-                name: 'Serious Disease Treatment',
-                nameMy: 'Rawatan penyakit serius',
-                nameCn: '严重疾病医疗费',
+                groupId: 'medical_group',
+                name: 'Serious Disease / Fertility Treatment',
+                nameMy: 'Rawatan penyakit serius / kesuburan',
+                nameCn: '严重疾病及生育治疗费',
                 limit: 10000,
-                description: 'For self, spouse or child (includes fertility, vaccination RM1000, dental RM1000)',
-                descriptionMy: 'Untuk diri, pasangan atau anak (termasuk kesuburan, vaksinasi RM1000, pergigian RM1000)',
-                descriptionCn: '个人、配偶或子女（包括生育治疗、1000令吉疫苗接种、1000令吉牙科）'
+                groupLimit: 10000,
+                description: 'Treatment for self, spouse or child (Individual/Joint assessment)',
+                descriptionMy: 'Untuk diri, pasangan atau anak',
+                descriptionCn: '个人、配偶或子女的医疗费用'
             },
             {
                 id: 'medical_checkup',
-                name: 'Complete Medical Examination',
-                nameMy: 'Pemeriksaan perubatan penuh',
-                nameCn: '全面体检',
+                groupId: 'medical_group',
+                name: 'Medical Examination & Mental Health',
+                nameMy: 'Pemeriksaan perubatan & kesihatan mental',
+                nameCn: '全面体检及心理健康检查',
                 limit: 1000,
-                description: 'Full medical checkup',
-                descriptionMy: 'Pemeriksaan kesihatan penuh',
-                descriptionCn: '个人、配偶或子女的全面体检'
+                groupLimit: 10000,
+                description: 'Includes full checkup, mental health diagnostic and dental (max RM1000)',
+                descriptionMy: 'Termasuk pemeriksaan penuh dan kesihatan mental',
+                descriptionCn: '包含全面体检、心理健康及牙科 (最高 RM1000)'
             },
             {
-                id: 'dental',
-                name: 'Dental Treatment',
-                nameMy: 'Rawatan pergigian',
-                nameCn: '牙科治疗',
+                id: 'vaccination',
+                groupId: 'medical_group',
+                name: 'Vaccination Expenses',
+                nameMy: 'Perbelanjaan vaksinasi',
+                nameCn: '疫苗接种费用',
                 limit: 1000,
-                description: 'Dental examination and treatment',
-                descriptionMy: 'Pemeriksaan dan rawatan pergigian',
-                descriptionCn: '个人、配偶或子女的牙科检查及治疗'
+                groupLimit: 10000,
+                description: 'Vaccinations for self, spouse or child',
+                descriptionMy: 'Vaksinasi untuk diri, pasangan atau anak',
+                descriptionCn: '个人、配偶或子女的疫苗接种'
+            },
+            {
+                id: 'disability_assessment',
+                groupId: 'medical_group',
+                name: 'Child Disability Assessment',
+                nameMy: 'Penilaian ketidakupayaan anak',
+                nameCn: '残疾子女相关检测/评估费',
+                limit: 4000,
+                groupLimit: 10000,
+                description: 'For child diagnosed with learning disability/Down Syndrome/Autism (max RM4000)',
+                descriptionMy: 'Untuk anak dengan sindrom Down/Autism',
+                descriptionCn: '针对学习障碍/唐氏综合征/自闭症子女的相关检测 (最高 RM4000)'
             },
             {
                 id: 'disabled_equipment',
@@ -169,9 +187,9 @@ const TAX_DATA = {
                 nameMy: 'Peralatan sokongan OKU',
                 nameCn: '残疾辅助器材',
                 limit: 6000,
-                description: 'For self, spouse, child or parent',
-                descriptionMy: 'Untuk diri sendiri, pasangan, anak atau ibu bapa',
-                descriptionCn: '为个人、配偶、子女或父母购买的辅具'
+                description: 'Basic supporting equipment for self, spouse, child or parent (who is disabled)',
+                descriptionMy: 'Untuk diri sendiri, pasangan, anak atau ibu bapa yang OKU',
+                descriptionCn: '为个人、配偶、子女或父母（残疾人士）购买的辅具'
             },
             {
                 id: 'disabled_self',
@@ -179,9 +197,9 @@ const TAX_DATA = {
                 nameMy: 'Individu OKU',
                 nameCn: '残疾人士（个人）',
                 limit: 6000,
-                description: 'If taxpayer is disabled',
-                descriptionMy: 'Jika pembayar cukai adalah OKU',
-                descriptionCn: '纳税人本身为残疾人士'
+                description: 'Additional personal relief if taxpayer is registered as a disabled person (OKU)',
+                descriptionMy: 'Pelepasan tambahan jika pembayar cukai adalah OKU',
+                descriptionCn: '纳税人本人实为残疾人士（需持有OKU卡）'
             }
         ],
         education: [

@@ -107,18 +107,33 @@ class TaxCalculator {
         });
 
         // Add user-specified reliefs
+        const groupTotals = {};
+
         for (const [reliefId, amount] of Object.entries(reliefs)) {
             if (amount > 0) {
                 const reliefInfo = this.findReliefById(reliefId);
                 if (reliefInfo) {
-                    const clampedAmount = Math.min(amount, reliefInfo.limit);
-                    totalReliefs += clampedAmount;
-                    reliefBreakdown.push({
-                        id: reliefId,
-                        name: reliefInfo.name,
-                        amount: clampedAmount,
-                        limit: reliefInfo.limit
-                    });
+                    let clampedAmount = Math.min(amount, reliefInfo.limit);
+
+                    // Check for group limits (e.g., Medical items sharing RM 10,000)
+                    if (reliefInfo.groupId && reliefInfo.groupLimit) {
+                        const groupId = reliefInfo.groupId;
+                        const currentGroupTotal = groupTotals[groupId] || 0;
+                        const remainingGroupLimit = reliefInfo.groupLimit - currentGroupTotal;
+
+                        clampedAmount = Math.min(clampedAmount, remainingGroupLimit);
+                        groupTotals[groupId] = currentGroupTotal + clampedAmount;
+                    }
+
+                    if (clampedAmount > 0) {
+                        totalReliefs += clampedAmount;
+                        reliefBreakdown.push({
+                            id: reliefId,
+                            name: reliefInfo.name,
+                            amount: clampedAmount,
+                            limit: reliefInfo.limit
+                        });
+                    }
                 }
             }
         }
