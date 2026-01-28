@@ -504,7 +504,7 @@ class MYTaxApp {
         const categoryNames = {
             operations: { name: { en: 'Operations', ms: 'Operasi', zh: '营运' }, icon: '🏢' },
             marketing: { name: { en: 'Marketing & Entertainment', ms: 'Pemasaran & Hiburan', zh: '营销与应酬' }, icon: '📢' },
-            assets: { name: { en: 'Assets & Equipment', icon: '💻', ms: 'Aset & Peralatan', zh: '资产与设备' } },
+            assets: { name: { en: 'Assets & Equipment', ms: 'Aset & Peralatan', zh: '资产与设备' }, icon: '💻' },
             other: { name: { en: 'Other Deductions', ms: 'Potongan Lain', zh: '其他扣除项' }, icon: '📋' },
             smeOnly: { name: { en: 'SME Special Incentives (YA 2024-2027)', ms: 'Insentif Khas PKS', zh: '中小企业特别奖励' }, icon: '🌟' }
         };

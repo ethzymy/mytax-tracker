@@ -141,9 +141,9 @@ const TAX_DATA = {
                 nameCn: '严重疾病及生育治疗费',
                 limit: 10000,
                 groupLimit: 10000,
-                description: 'Treatment for self, spouse or child (Individual/Joint assessment)',
-                descriptionMy: 'Untuk diri, pasangan atau anak',
-                descriptionCn: '个人、配偶或子女的医疗费用'
+                description: 'Cancer, Heart Disease, Leukemia, Renal Failure, Fertility, etc. (Individual/Joint assessment)',
+                descriptionMy: 'Kanser, Sakit Jantung, Leukemia, Kegagalan Buah Pinggang, Kesuburan, dll.',
+                descriptionCn: '癌症、心脏病、白血病、肾衰竭、生育治疗等（个人/联合评估）'
             },
             {
                 id: 'medical_checkup',
@@ -380,9 +380,9 @@ const TAX_DATA = {
                 nameMy: 'Perbelanjaan hiburan',
                 nameCn: '应酬费',
                 deductionRate: 0.5,
-                description: '50% deductible only',
-                descriptionMy: 'Hanya 50% boleh ditolak',
-                descriptionCn: '仅限 50% 可扣税'
+                description: 'Meals, gifts, hampers for customers/clients (50% deductible)',
+                descriptionMy: 'Jamuan, hadiah, hampers untuk pelanggan (Potongan 50%)',
+                descriptionCn: '款待客户的餐饮、礼品、礼篮等 (仅限 50% 可扣税)'
             }
         ],
         assets: [
@@ -390,11 +390,11 @@ const TAX_DATA = {
                 id: 'small_assets',
                 name: 'Small Assets (≤RM2,000 each)',
                 nameMy: 'Aset kecil (≤RM2,000)',
-                nameCn: '小额资产 (每个≤RM2,000)',
+                nameCn: '小额资产 (单价≤RM2,000)',
                 deductionRate: 1.0,
-                description: '100% deductible if ≤RM2,000 per item',
-                descriptionMy: '100% boleh ditolak jika ≤RM2,000 setiap item',
-                descriptionCn: '每个不超过2000令吉的项目可100%扣除'
+                description: '100% Capital Allowance if cost ≤ RM2,000 per item (e.g. Printer, Chair)',
+                descriptionMy: '100% Elaun Modal jika kos ≤ RM2,000 (cth: Pencetak, Kerusi)',
+                descriptionCn: '单价不超过2000令吉的项目可100%回扣 (如：打印机、办公椅)'
             },
             {
                 id: 'office_equipment',
@@ -402,9 +402,9 @@ const TAX_DATA = {
                 nameMy: 'Peralatan & perabot pejabat',
                 nameCn: '办公设备及家具',
                 deductionRate: 0.2,
-                description: '20% capital allowance per year',
-                descriptionMy: '20% elaun modal setahun',
-                descriptionCn: '每年 20% 资本津贴'
+                description: 'For assets with cost > RM 2,000 (20% Capital Allowance)',
+                descriptionMy: 'Untuk aset dengan kos > RM 2,000 (20% Elaun Modal)',
+                descriptionCn: '单价超过2,000令吉的资产 (每年 20% 资本津贴)'
             },
             {
                 id: 'computer_equipment',
@@ -719,11 +719,11 @@ const UI_TRANSLATIONS = {
         continue_btn: "继续 →",
         monthly_salary: "月薪：",
         bonus_months: "年终奖金 (月)：",
-        other_annual_income: "其他年收入：",
+        other_annual_income: "其他收入(年度)：",
         epf_rate: "公积金率 (EPF)：",
         annual_salary: "基本年薪 (12个月)",
         bonus: "年终奖金",
-        other_income: "其他收入",
+        other_income: "其他收入(年度)",
         gross_annual_income: "年收入总额",
         epf_contribution: "公积金扣除 (EPF)",
         quick_estimate: "初步估算",
