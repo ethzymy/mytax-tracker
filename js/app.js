@@ -250,12 +250,22 @@ class MYTaxApp {
     updateIncomeSectionVisibility() {
         const employeeSection = document.getElementById('employeeIncomeSection');
         const businessSection = document.getElementById('businessIncomeSection');
+        const businessSummaryCard = document.getElementById('businessSummaryCard');
 
         if (employeeSection) {
             employeeSection.style.display = this.incomeType === 'employee' ? 'block' : 'none';
         }
         if (businessSection) {
             businessSection.style.display = this.incomeType !== 'employee' ? 'block' : 'none';
+        }
+        // Business Tax Summary card: only for Company (Sdn Bhd / LLP)
+        if (businessSummaryCard) {
+            businessSummaryCard.style.display = this.incomeType === 'company' ? 'block' : 'none';
+        }
+        // SME Savings row in Summary: only for Company
+        const smeSavingsRow = document.getElementById('smeSavingsRow');
+        if (smeSavingsRow) {
+            smeSavingsRow.style.display = this.incomeType === 'company' ? 'flex' : 'none';
         }
     }
 
