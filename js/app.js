@@ -6,16 +6,109 @@ class MYTaxApp {
     constructor() {
         this.calculator = taxCalculator;
         this.userData = this.loadUserData();
+        this.lang = localStorage.getItem('mytax-lang') || null;
         this.init();
     }
 
     init() {
         this.incomeType = 'employee'; // Default
+        this.initLanguage();
         this.checkDisclaimer();
         this.bindEvents();
+        this.bindMenuEvents();
         this.bindInfoTooltips();
         this.updateSetupUI();
         this.registerServiceWorker();
+    }
+
+    // ===== Language Management =====
+    initLanguage() {
+        const langModal = document.getElementById('languageModal');
+        if (!this.lang) {
+            langModal.classList.remove('hidden');
+        } else {
+            langModal.classList.add('hidden');
+            this.translateUI();
+        }
+
+        // Bind language options
+        document.querySelectorAll('.lang-opt').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const selectedLang = btn.dataset.lang;
+                this.setLanguage(selectedLang);
+                langModal.classList.add('hidden');
+
+                // If disclaimer not accepted, show it after language selection
+                if (!localStorage.getItem('disclaimerAccepted')) {
+                    document.getElementById('disclaimerModal').classList.remove('hidden');
+                }
+            });
+        });
+
+        // Toggle language from menu
+        document.getElementById('menuLangBtn')?.addEventListener('click', () => {
+            langModal.classList.remove('hidden');
+            document.getElementById('menuDropdown').classList.remove('show');
+        });
+    }
+
+    bindMenuEvents() {
+        const menuBtn = document.getElementById('menuBtn');
+        const dropdown = document.getElementById('menuDropdown');
+
+        if (menuBtn && dropdown) {
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                dropdown.classList.toggle('show');
+            });
+
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!menuBtn.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+
+        // Menu theme toggle
+        document.getElementById('menuThemeBtn')?.addEventListener('click', () => {
+            this.toggleTheme();
+        });
+    }
+
+    setLanguage(lang) {
+        this.lang = lang;
+        localStorage.setItem('mytax-lang', lang);
+        this.translateUI();
+
+        // Re-render dynamic content
+        if (this.incomeType) {
+            this.renderReliefCategories();
+            this.renderBusinessDeductions();
+            this.updateCalculations();
+        }
+    }
+
+    translateUI() {
+        const lang = this.lang || 'en';
+        const translations = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS['en'];
+
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.dataset.i18n;
+            if (translations[key]) {
+                el.textContent = translations[key];
+            }
+        });
+
+        // Update specific tooltips or titles
+        const langSwitchBtn = document.getElementById('langSwitchBtn');
+        if (langSwitchBtn) {
+            const titles = { en: "Switch Language", ms: "Tukar Bahasa", zh: "切换语言" };
+            langSwitchBtn.title = titles[lang] || titles.en;
+        }
+
+        // Update Theme Menu Text
+        this.updateThemeMenuText();
     }
 
     // ===== Disclaimer Modal =====
@@ -23,7 +116,8 @@ class MYTaxApp {
         const disclaimerAccepted = localStorage.getItem('disclaimerAccepted');
         const modal = document.getElementById('disclaimerModal');
 
-        if (disclaimerAccepted) {
+        // Only show disclaimer if lang is already selected
+        if (disclaimerAccepted || !this.lang) {
             modal.classList.add('hidden');
         } else {
             modal.classList.remove('hidden');
@@ -188,19 +282,29 @@ class MYTaxApp {
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('mytax-theme', newTheme);
 
-        // Update icon
-        const icon = document.querySelector('.theme-icon');
-        if (icon) {
-            icon.textContent = newTheme === 'light' ? '🌙' : '☀️';
-        }
+        this.updateThemeMenuText();
     }
 
     loadTheme() {
-        const savedTheme = localStorage.getItem('mytax-theme') || 'dark';
+        const savedTheme = localStorage.getItem('mytax-theme') || 'light';
         document.documentElement.setAttribute('data-theme', savedTheme);
-        const icon = document.querySelector('.theme-icon');
-        if (icon) {
-            icon.textContent = savedTheme === 'light' ? '🌙' : '☀️';
+        this.updateThemeMenuText();
+    }
+
+    updateThemeMenuText() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const lang = this.lang || 'en';
+        const icon = document.getElementById('menuThemeIcon');
+        const text = document.getElementById('menuThemeText');
+
+        if (icon && text) {
+            if (currentTheme === 'dark') {
+                icon.textContent = '☀️';
+                text.textContent = lang === 'zh' ? '开启浅色模式' : (lang === 'ms' ? 'Mod Terang' : 'Light Mode');
+            } else {
+                icon.textContent = '🌙';
+                text.textContent = lang === 'zh' ? '开启深色模式' : (lang === 'ms' ? 'Mod Gelap' : 'Dark Mode');
+            }
         }
     }
 
@@ -260,13 +364,14 @@ class MYTaxApp {
         if (!container) return;
 
         const categories = this.calculator.getReliefCategories();
+        const lang = this.lang || 'en';
         const categoryNames = {
-            automatic: { name: 'Automatic Reliefs', icon: '✅' },
-            family: { name: 'Family & Dependents', icon: '👨‍👩‍👧‍👦' },
-            medical: { name: 'Medical & Health', icon: '🏥' },
-            education: { name: 'Education', icon: '🎓' },
-            lifestyle: { name: 'Lifestyle', icon: '🎯' },
-            insurance: { name: 'Insurance & Savings', icon: '🛡️' }
+            automatic: { name: { en: 'Automatic Reliefs', ms: 'Pelepasan Automatik', zh: '自动减免' }, icon: '✅' },
+            family: { name: { en: 'Family & Dependents', ms: 'Keluarga & Tanggungan', zh: '家庭与受抚养人' }, icon: '👨‍👩‍👧‍👦' },
+            medical: { name: { en: 'Medical & Health', ms: 'Perubatan & Kesihatan', zh: '医疗与健康' }, icon: '🏥' },
+            education: { name: { en: 'Education', ms: 'Pendidikan', zh: '教育' }, icon: '🎓' },
+            lifestyle: { name: { en: 'Lifestyle', ms: 'Gaya Hidup', zh: '生活方式' }, icon: '🎯' },
+            insurance: { name: { en: 'Insurance & Savings', ms: 'Insurans & Simpanan', zh: '保险与储蓄' }, icon: '🛡️' }
         };
 
         container.innerHTML = '';
@@ -274,14 +379,16 @@ class MYTaxApp {
         for (const [categoryId, items] of Object.entries(categories)) {
             if (categoryId === 'automatic') continue; // Skip automatic reliefs in editing
 
-            const categoryInfo = categoryNames[categoryId] || { name: categoryId, icon: '📋' };
+            const categoryInfo = categoryNames[categoryId] || { name: { en: categoryId }, icon: '📋' };
+            const displayName = categoryInfo.name[lang] || categoryInfo.name.en;
+
             const categoryEl = document.createElement('div');
             categoryEl.className = 'relief-category';
             categoryEl.innerHTML = `
                 <div class="relief-category-header" onclick="app.toggleCategory(this)">
                     <div class="relief-category-title">
                         <span>${categoryInfo.icon}</span>
-                        <span>${categoryInfo.name}</span>
+                        <span>${displayName}</span>
                     </div>
                     <span class="relief-category-amount" id="category-total-${categoryId}">RM 0</span>
                 </div>
@@ -295,11 +402,19 @@ class MYTaxApp {
 
     renderReliefItem(item) {
         const savedValue = this.userData.reliefs?.[item.id] || 0;
+        const lang = this.lang || 'en';
+
+        // Get translated name and description
+        const name = lang === 'ms' ? (item.nameMy || item.name) : (lang === 'zh' ? (item.nameCn || item.name) : item.name);
+        const desc = lang === 'ms' ? (item.descriptionMy || item.description) : (lang === 'zh' ? (item.descriptionCn || item.description) : item.description);
+        const limitText = lang === 'ms' ? 'Had' : (lang === 'zh' ? '上限' : 'Limit');
+        const perPersonText = lang === 'ms' ? ' setiap orang' : (lang === 'zh' ? ' 每人' : ' per person');
+
         return `
             <div class="relief-item">
                 <div class="relief-item-info">
-                    <div class="relief-item-name">${item.name}</div>
-                    <div class="relief-item-limit">Limit: RM ${item.limit.toLocaleString()}${item.perUnit ? ' per person' : ''}</div>
+                    <div class="relief-item-name">${name}</div>
+                    <div class="relief-item-limit">${desc} (${limitText}: RM ${item.limit.toLocaleString()}${item.perUnit ? perPersonText : ''})</div>
                 </div>
                 <div class="relief-item-input">
                     <div class="input-with-prefix">
@@ -363,12 +478,13 @@ class MYTaxApp {
         const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
 
         const categories = TAX_DATA.businessDeductions;
+        const lang = this.lang || 'en';
         const categoryNames = {
-            operations: { name: 'Operations', icon: '🏢' },
-            marketing: { name: 'Marketing & Entertainment', icon: '📢' },
-            assets: { name: 'Assets & Equipment', icon: '💻' },
-            other: { name: 'Other Deductions', icon: '📋' },
-            smeOnly: { name: 'SME Special Incentives (YA 2024-2027)', icon: '🌟' }
+            operations: { name: { en: 'Operations', ms: 'Operasi', zh: '营运' }, icon: '🏢' },
+            marketing: { name: { en: 'Marketing & Entertainment', ms: 'Pemasaran & Hiburan', zh: '营销与应酬' }, icon: '📢' },
+            assets: { name: { en: 'Assets & Equipment', icon: '💻', ms: 'Aset & Peralatan', zh: '资产与设备' } },
+            other: { name: { en: 'Other Deductions', ms: 'Potongan Lain', zh: '其他扣除项' }, icon: '📋' },
+            smeOnly: { name: { en: 'SME Special Incentives (YA 2024-2027)', ms: 'Insentif Khas PKS', zh: '中小企业特别奖励' }, icon: '🌟' }
         };
 
         container.innerHTML = '';
@@ -379,7 +495,9 @@ class MYTaxApp {
                 continue;
             }
 
-            const categoryInfo = categoryNames[categoryId] || { name: categoryId, icon: '📋' };
+            const categoryInfo = categoryNames[categoryId] || { name: { en: categoryId }, icon: '📋' };
+            const displayName = categoryInfo.name[lang] || categoryInfo.name.en;
+
             const categoryEl = document.createElement('div');
             categoryEl.className = 'relief-category';
 
@@ -392,8 +510,8 @@ class MYTaxApp {
                 <div class="relief-category-header" onclick="app.toggleCategory(this)">
                     <div class="relief-category-title">
                         <span>${categoryInfo.icon}</span>
-                        <span>${categoryInfo.name}</span>
-                        ${categoryId === 'smeOnly' ? '<span class="badge badge-sme">SME Only</span>' : ''}
+                        <span>${displayName}</span>
+                        ${categoryId === 'smeOnly' ? `<span class="badge badge-sme">${lang === 'zh' ? '仅限中小企业' : (lang === 'ms' ? 'PKS Sahaja' : 'SME Only')}</span>` : ''}
                     </div>
                     <span class="relief-category-amount" id="deduction-total-${categoryId}">RM 0</span>
                 </div>
@@ -407,15 +525,21 @@ class MYTaxApp {
 
     renderDeductionItem(item) {
         const savedValue = this.userData.deductions?.[item.id] || 0;
+        const lang = this.lang || 'en';
+
         const rateText = item.deductionRate === 1.0 ? '100%' :
             item.deductionRate === 0.5 ? '50%' :
-                item.deductionRate === 2.0 ? '200% (Double)' :
+                item.deductionRate === 2.0 ? (lang === 'zh' ? '200%（双倍）' : (lang === 'ms' ? '200% (Ganda)' : '200% (Double)')) :
                     `${(item.deductionRate * 100).toFixed(0)}% CA`;
+
+        const name = lang === 'ms' ? (item.nameMy || item.name) : (lang === 'zh' ? (item.nameCn || item.name) : item.name);
+        const desc = lang === 'ms' ? (item.descriptionMy || item.description) : (lang === 'zh' ? (item.descriptionCn || item.description) : item.description);
+
         return `
             <div class="relief-item">
                 <div class="relief-item-info">
-                    <div class="relief-item-name">${item.name}</div>
-                    <div class="relief-item-limit">${item.description} (${rateText})</div>
+                    <div class="relief-item-name">${name}</div>
+                    <div class="relief-item-limit">${desc} (${rateText})</div>
                 </div>
                 <div class="relief-item-input">
                     <div class="input-with-prefix">
@@ -643,16 +767,22 @@ class MYTaxApp {
         }
 
         // Business Tax Summary
+        const lang = this.lang || 'en';
         const businessTypeNames = {
-            'sdn-bhd': 'Sdn Bhd',
-            'llp': 'LLP',
-            'sole-prop': 'Sole Proprietor',
-            'partnership': 'Partnership'
+            'sdn-bhd': lang === 'zh' ? '私人有限公司 (Sdn Bhd)' : (lang === 'ms' ? 'Syarikat (Sdn Bhd)' : 'Sdn Bhd'),
+            'llp': lang === 'zh' ? '有限责任合伙 (LLP)' : (lang === 'ms' ? 'Perkongsian Liabiliti Terhad (LLP)' : 'LLP'),
+            'sole-prop': lang === 'zh' ? '独资企业' : (lang === 'ms' ? 'Pemilik Tunggal' : 'Sole Proprietor'),
+            'partnership': lang === 'zh' ? '合伙企业' : (lang === 'ms' ? 'Perkongsian' : 'Partnership')
         };
         update('summaryBusinessType', businessTypeNames[businessType] || businessType);
         update('summaryBusinessIncome', `RM ${chargeableBusinessIncome.toLocaleString()}`);
-        update('summarySmeStatus', isCorpType ? (isSME ? 'Eligible ✓' : 'Not Eligible') : 'N/A');
-        update('summaryBusinessTax', isCorpType ? `RM ${businessTax.toLocaleString()}` : 'Use Personal');
+
+        const smeEligibleText = lang === 'zh' ? '符合资格 ✓' : (lang === 'ms' ? 'Layak ✓' : 'Eligible ✓');
+        const smeNotEligibleText = lang === 'zh' ? '不符合资格' : (lang === 'ms' ? 'Tidak Layak' : 'Not Eligible');
+        const personalTaxText = lang === 'zh' ? '使用个人所得税' : (lang === 'ms' ? 'Guna Cukai Peribadi' : 'Use Personal');
+
+        update('summarySmeStatus', isCorpType ? (isSME ? smeEligibleText : smeNotEligibleText) : 'N/A');
+        update('summaryBusinessTax', isCorpType ? `RM ${businessTax.toLocaleString()}` : personalTaxText);
 
         // Total Tax Overview
         const totalTax = result.finalTax + (isCorpType ? businessTax : 0);

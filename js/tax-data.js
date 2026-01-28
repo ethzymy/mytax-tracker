@@ -38,8 +38,11 @@ const TAX_DATA = {
                 id: 'self',
                 name: 'Self & Dependent Relatives',
                 nameMy: 'Individu dan saudara tanggungan',
+                nameCn: '个人及赡养亲属',
                 limit: 9000,
                 description: 'Automatic personal relief',
+                descriptionMy: 'Pelepasan peribadi automatik',
+                descriptionCn: '自动个人减免',
                 auto: true
             }
         ],
@@ -48,54 +51,75 @@ const TAX_DATA = {
                 id: 'spouse',
                 name: 'Spouse (Non-working)',
                 nameMy: 'Suami/Isteri (tiada pendapatan)',
+                nameCn: '配偶（无收入）',
                 limit: 4000,
-                description: 'For non-working spouse'
+                description: 'For non-working spouse',
+                descriptionMy: 'Untuk suami/isteri tanpa pendapatan',
+                descriptionCn: '适用于无收入的配偶'
             },
             {
                 id: 'spouse_disabled',
                 name: 'Disabled Spouse',
                 nameMy: 'Suami/Isteri OKU',
+                nameCn: '残疾配偶',
                 limit: 5000,
-                description: 'Additional for disabled spouse'
+                description: 'Additional for disabled spouse',
+                descriptionMy: 'Tambahan untuk suami/isteri OKU',
+                descriptionCn: '残疾配偶的额外减免'
             },
             {
                 id: 'child_under18',
                 name: 'Child Under 18',
                 nameMy: 'Anak bawah 18 tahun',
+                nameCn: '18岁以下子女',
                 limit: 2000,
                 perUnit: true,
-                description: 'Per unmarried child under 18'
+                description: 'Per unmarried child under 18',
+                descriptionMy: 'Setiap anak yang belum berkahwin bawah 18 tahun',
+                descriptionCn: '每名18岁以下未婚子女'
             },
             {
                 id: 'child_18plus_studying',
                 name: 'Child 18+ (Tertiary Education)',
                 nameMy: 'Anak 18+ (Pengajian tinggi)',
+                nameCn: '18岁以上子女（高等教育）',
                 limit: 8000,
                 perUnit: true,
-                description: 'Per child 18+ in diploma/degree'
+                description: 'Per child 18+ in diploma/degree',
+                descriptionMy: 'Setiap anak 18+ dalam diploma/ijazah',
+                descriptionCn: '每名18岁以上就读大专/学士学位的子女'
             },
             {
                 id: 'child_disabled',
                 name: 'Disabled Child',
                 nameMy: 'Anak OKU',
+                nameCn: '残疾子女',
                 limit: 6000,
                 perUnit: true,
-                description: 'Per disabled child'
+                description: 'Per disabled child',
+                descriptionMy: 'Setiap anak OKU',
+                descriptionCn: '每名残疾子女'
             },
             {
                 id: 'child_disabled_18plus',
                 name: 'Disabled Child 18+ (Studying)',
                 nameMy: 'Anak OKU 18+ (belajar)',
+                nameCn: '18岁以上残疾子女（高等教育）',
                 limit: 14000,
                 perUnit: true,
-                description: 'Disabled child 18+ in tertiary edu'
+                description: 'Disabled child 18+ in tertiary edu',
+                descriptionMy: 'Anak OKU 18+ dalam pengajian tinggi',
+                descriptionCn: '每名18岁以上就读高等教育的残疾子女'
             },
             {
                 id: 'alimony',
                 name: 'Alimony to Former Wife',
                 nameMy: 'Nafkah kepada bekas isteri',
+                nameCn: '前妻赡养费',
                 limit: 4000,
-                description: 'Payments to former wife'
+                description: 'Payments to former wife',
+                descriptionMy: 'Bayaran kepada bekas isteri',
+                descriptionCn: '支付给前妻的赡养费'
             }
         ],
         medical: [
@@ -103,43 +127,61 @@ const TAX_DATA = {
                 id: 'parents_medical',
                 name: 'Parents Medical/Carer',
                 nameMy: 'Perubatan/penjaga ibu bapa',
+                nameCn: '父母医疗及看护费',
                 limit: 8000,
-                description: 'Medical treatment, special needs or carer for parents'
+                description: 'Medical treatment, special needs or carer for parents',
+                descriptionMy: 'Rawatan perubatan, keperluan khas atau penjaga untuk ibu bapa',
+                descriptionCn: '父母的医疗、特殊需求或看护费'
             },
             {
                 id: 'serious_disease',
                 name: 'Serious Disease Treatment',
                 nameMy: 'Rawatan penyakit serius',
+                nameCn: '严重疾病医疗费',
                 limit: 10000,
-                description: 'For self, spouse or child (includes fertility, vaccination RM1000, dental RM1000)'
+                description: 'For self, spouse or child (includes fertility, vaccination RM1000, dental RM1000)',
+                descriptionMy: 'Untuk diri, pasangan atau anak (termasuk kesuburan, vaksinasi RM1000, pergigian RM1000)',
+                descriptionCn: '个人、配偶或子女（包括生育治疗、1000令吉疫苗接种、1000令吉牙科）'
             },
             {
                 id: 'medical_checkup',
                 name: 'Complete Medical Examination',
                 nameMy: 'Pemeriksaan perubatan penuh',
+                nameCn: '全面体检',
                 limit: 1000,
-                description: 'Full medical checkup'
+                description: 'Full medical checkup',
+                descriptionMy: 'Pemeriksaan kesihatan penuh',
+                descriptionCn: '个人、配偶或子女的全面体检'
             },
             {
                 id: 'dental',
                 name: 'Dental Treatment',
                 nameMy: 'Rawatan pergigian',
+                nameCn: '牙科治疗',
                 limit: 1000,
-                description: 'Dental examination and treatment'
+                description: 'Dental examination and treatment',
+                descriptionMy: 'Pemeriksaan dan rawatan pergigian',
+                descriptionCn: '个人、配偶或子女的牙科检查及治疗'
             },
             {
                 id: 'disabled_equipment',
                 name: 'Disabled Support Equipment',
                 nameMy: 'Peralatan sokongan OKU',
+                nameCn: '残疾辅助器材',
                 limit: 6000,
-                description: 'For self, spouse, child or parent'
+                description: 'For self, spouse, child or parent',
+                descriptionMy: 'Untuk diri sendiri, pasangan, anak atau ibu bapa',
+                descriptionCn: '为个人、配偶、子女或父母购买的辅具'
             },
             {
                 id: 'disabled_self',
                 name: 'Disabled Individual',
                 nameMy: 'Individu OKU',
+                nameCn: '残疾人士（个人）',
                 limit: 6000,
-                description: 'If taxpayer is disabled'
+                description: 'If taxpayer is disabled',
+                descriptionMy: 'Jika pembayar cukai adalah OKU',
+                descriptionCn: '纳税人本身为残疾人士'
             }
         ],
         education: [
@@ -147,22 +189,31 @@ const TAX_DATA = {
                 id: 'education_self',
                 name: 'Education Fees (Self)',
                 nameMy: 'Yuran pendidikan (sendiri)',
+                nameCn: '自身教育费',
                 limit: 7000,
-                description: 'Diploma/Degree/Masters/PhD or approved courses'
+                description: 'Diploma/Degree/Masters/PhD or approved courses',
+                descriptionMy: 'Diploma/Ijazah/Sarjana/PhD atau kursus yang diluluskan',
+                descriptionCn: '文凭、学士、硕士、博士或获批准的技能进修课程'
             },
             {
                 id: 'sspn',
                 name: 'SSPN Education Savings',
                 nameMy: 'SSPN (Simpanan pendidikan)',
+                nameCn: 'SSPN 教育储蓄',
                 limit: 8000,
-                description: 'Net deposit in Skim Simpanan Pendidikan Nasional'
+                description: 'Net deposit in Skim Simpanan Pendidikan Nasional',
+                descriptionMy: 'Simpanan bersih dalam Skim Simpanan Pendidikan Nasional',
+                descriptionCn: '国民教育储蓄计划（SSPN）的净存款额'
             },
             {
                 id: 'child_learning_disability',
                 name: 'Child Learning Disability',
                 nameMy: 'Anak masalah pembelajaran',
+                nameCn: '学习障碍子女',
                 limit: 6000,
-                description: 'For children with autism, ADHD, etc.'
+                description: 'For children with autism, ADHD, etc.',
+                descriptionMy: 'Untuk anak-anak dengan autisme, ADHD, dll.',
+                descriptionCn: '适用于患有自闭症、多动症等的子女'
             }
         ],
         lifestyle: [
@@ -170,22 +221,31 @@ const TAX_DATA = {
                 id: 'lifestyle',
                 name: 'Lifestyle',
                 nameMy: 'Gaya hidup',
+                nameCn: '生活方式',
                 limit: 2500,
-                description: 'Books, computers, smartphones, tablets, internet'
+                description: 'Books, computers, smartphones, tablets, internet',
+                descriptionMy: 'Buku, komputer, telefon pintar, tablet, internet',
+                descriptionCn: '书籍、电脑、智能手机、平板电脑、网络费用'
             },
             {
                 id: 'sports',
                 name: 'Sports Equipment & Activities',
                 nameMy: 'Peralatan & aktiviti sukan',
+                nameCn: '运动器材及活动',
                 limit: 1000,
-                description: 'Sports equipment, gym membership, competitions'
+                description: 'Sports equipment, gym membership, competitions',
+                descriptionMy: 'Peralatan sukan, keahlian gim, pertandingan',
+                descriptionCn: '运动器材、健身会员费、报名参加比赛'
             },
             {
                 id: 'ev_charging',
                 name: 'EV Charging Facilities',
                 nameMy: 'Kemudahan pengecasan EV',
+                nameCn: '电动车充电设施',
                 limit: 2500,
-                description: 'Electric vehicle charging equipment (not for business)'
+                description: 'Electric vehicle charging equipment (not for business)',
+                descriptionMy: 'Peralatan pengecasan kenderaan elektrik (bukan untuk perniagaan)',
+                descriptionCn: '购买/安装电动车充电设施（非商业用途）'
             }
         ],
         insurance: [
@@ -193,29 +253,41 @@ const TAX_DATA = {
                 id: 'life_insurance_epf',
                 name: 'Life Insurance + EPF',
                 nameMy: 'Insurans nyawa + KWSP',
+                nameCn: '人寿保险及公积金 (EPF)',
                 limit: 7000,
-                description: 'Life insurance premium + EPF contribution (combined)'
+                description: 'Life insurance premium + EPF contribution (combined)',
+                descriptionMy: 'Premium insurans nyawa + caruman KWSP (digabungkan)',
+                descriptionCn: '人寿保费及公积金扣除（合并计算）'
             },
             {
                 id: 'prs',
                 name: 'Private Retirement Scheme',
                 nameMy: 'Skim Persaraan Swasta',
+                nameCn: '私人退休计划 (PRS)',
                 limit: 3000,
-                description: 'Deferred annuity or PRS contributions'
+                description: 'Deferred annuity or PRS contributions',
+                descriptionMy: 'Anuiti tertangguh atau caruman PRS',
+                descriptionCn: '递延年金或私人退休计划 (PRS) 存款'
             },
             {
                 id: 'education_medical_insurance',
                 name: 'Education/Medical Insurance',
                 nameMy: 'Insurans pendidikan/perubatan',
+                nameCn: '教育或医疗保险',
                 limit: 4000,
-                description: 'Education or medical insurance for self, spouse, child'
+                description: 'Education or medical insurance for self, spouse, child',
+                descriptionMy: 'Insurans pendidikan atau perubatan untuk diri, pasangan, anak',
+                descriptionCn: '个人、配偶或子女的教育或医疗保险'
             },
             {
                 id: 'socso',
                 name: 'SOCSO Contribution',
                 nameMy: 'Caruman PERKESO',
+                nameCn: '社会保险 (SOCSO)',
                 limit: 350,
-                description: 'Social Security Organization contribution'
+                description: 'Social Security Organization contribution',
+                descriptionMy: 'Caruman Pertubuhan Keselamatan Sosial',
+                descriptionCn: '社会保险 (SOCSO) 贡献'
             }
         ]
     },
@@ -236,29 +308,41 @@ const TAX_DATA = {
                 id: 'rent',
                 name: 'Office/Shop Rent',
                 nameMy: 'Sewa pejabat/kedai',
+                nameCn: '办公室/店面租金',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             },
             {
                 id: 'utilities',
                 name: 'Utilities (Electric/Water/Internet)',
                 nameMy: 'Utiliti (elektrik/air/internet)',
+                nameCn: '公用事业费 (水电网)',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             },
             {
                 id: 'salaries',
                 name: 'Employee Salaries & EPF',
                 nameMy: 'Gaji pekerja & KWSP',
+                nameCn: '员工薪水及公积金',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             },
             {
                 id: 'professional_fees',
                 name: 'Professional Fees (Accounting/Legal)',
                 nameMy: 'Yuran profesional',
+                nameCn: '专业费用 (会计/法律)',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             }
         ],
         marketing: [
@@ -266,15 +350,21 @@ const TAX_DATA = {
                 id: 'advertising',
                 name: 'Advertising & Marketing',
                 nameMy: 'Pengiklanan & pemasaran',
+                nameCn: '广告与营销费',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             },
             {
                 id: 'entertainment',
                 name: 'Entertainment Expenses',
                 nameMy: 'Perbelanjaan hiburan',
+                nameCn: '应酬费',
                 deductionRate: 0.5,
-                description: '50% deductible only'
+                description: '50% deductible only',
+                descriptionMy: 'Hanya 50% boleh ditolak',
+                descriptionCn: '仅限 50% 可扣税'
             }
         ],
         assets: [
@@ -282,30 +372,42 @@ const TAX_DATA = {
                 id: 'small_assets',
                 name: 'Small Assets (≤RM2,000 each)',
                 nameMy: 'Aset kecil (≤RM2,000)',
+                nameCn: '小额资产 (每个≤RM2,000)',
                 deductionRate: 1.0,
-                description: '100% deductible if ≤RM2,000 per item'
+                description: '100% deductible if ≤RM2,000 per item',
+                descriptionMy: '100% boleh ditolak jika ≤RM2,000 setiap item',
+                descriptionCn: '每个不超过2000令吉的项目可100%扣除'
             },
             {
                 id: 'office_equipment',
                 name: 'Office Equipment & Furniture',
                 nameMy: 'Peralatan & perabot pejabat',
+                nameCn: '办公设备及家具',
                 deductionRate: 0.2,
-                description: '20% capital allowance per year'
+                description: '20% capital allowance per year',
+                descriptionMy: '20% elaun modal setahun',
+                descriptionCn: '每年 20% 资本津贴'
             },
             {
                 id: 'computer_equipment',
                 name: 'Computer & ICT Equipment',
                 nameMy: 'Komputer & peralatan ICT',
+                nameCn: '电脑及通讯技术设备',
                 deductionRate: 0.4,
-                description: '40% accelerated capital allowance'
+                description: '40% accelerated capital allowance',
+                descriptionMy: '40% elaun modal dipercepatkan',
+                descriptionCn: '40% 加速资本津贴'
             },
             {
                 id: 'motor_vehicle',
                 name: 'Motor Vehicle (Business Use)',
                 nameMy: 'Kenderaan bermotor (kegunaan perniagaan)',
+                nameCn: '机动车辆 (商务用途)',
                 deductionRate: 0.2,
                 limit: 100000,
-                description: '20% CA, max RM100,000'
+                description: '20% CA, max RM100,000',
+                descriptionMy: '20% elaun modal, maks RM100,000',
+                descriptionCn: '20% 资本津贴，最高限额10万令吉'
             }
         ],
         other: [
@@ -313,30 +415,42 @@ const TAX_DATA = {
                 id: 'charitable_donations',
                 name: 'Charitable Donations',
                 nameMy: 'Sumbangan amal',
+                nameCn: '慈善捐款',
                 deductionRate: 1.0,
                 limitPercent: 0.1,
-                description: 'Max 10% of aggregate income'
+                description: 'Max 10% of aggregate income',
+                descriptionMy: 'Maks 10% daripada pendapatan agregat',
+                descriptionCn: '最高限额为总收入的 10%'
             },
             {
                 id: 'rd_expenses',
                 name: 'R&D Expenses',
                 nameMy: 'Perbelanjaan R&D',
+                nameCn: '研发费用',
                 deductionRate: 2.0,
-                description: 'Double deduction for approved R&D'
+                description: 'Double deduction for approved R&D',
+                descriptionMy: 'Potongan berganda untuk R&D yang diluluskan',
+                descriptionCn: '获批准的研发项目可获得双倍扣除'
             },
             {
                 id: 'training',
                 name: 'Staff Training',
                 nameMy: 'Latihan pekerja',
+                nameCn: '员工培训费',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             },
             {
                 id: 'insurance_business',
                 name: 'Business Insurance',
                 nameMy: 'Insurans perniagaan',
+                nameCn: '商业保险',
                 deductionRate: 1.0,
-                description: '100% deductible'
+                description: '100% deductible',
+                descriptionMy: '100% boleh ditolak',
+                descriptionCn: '100% 可扣税'
             }
         ],
         smeOnly: [
@@ -344,49 +458,312 @@ const TAX_DATA = {
                 id: 'einvoice_system',
                 name: 'e-Invoice System (YA 2024-2027)',
                 nameMy: 'Sistem e-Invois',
+                nameCn: '电子发票系统',
                 deductionRate: 1.0,
                 limit: 50000,
                 smeOnly: true,
-                description: 'RM50,000/year for e-Invoice implementation'
+                description: 'RM50,000/year for e-Invoice implementation',
+                descriptionMy: 'RM50,000/setahun untuk pelaksanaan e-Invois',
+                descriptionCn: '电子发票实施每年最高限额5万令吉'
             },
             {
                 id: 'esg_expenditure',
                 name: 'ESG Expenditure (YA 2024-2027)',
                 nameMy: 'Perbelanjaan ESG',
+                nameCn: 'ESG (环境、社会和治理) 支出',
                 deductionRate: 1.0,
                 limit: 50000,
                 smeOnly: true,
-                description: 'RM50,000/year for ESG-related costs'
+                description: 'RM50,000/year for ESG-related costs',
+                descriptionMy: 'RM50,000/setahun untuk kos berkaitan ESG',
+                descriptionCn: 'ESG相关支出每年最高限额5万令吉'
             },
             {
                 id: 'automation_equipment',
                 name: 'Automation Equipment',
                 nameMy: 'Peralatan automasi',
+                nameCn: '自动化设备',
                 deductionRate: 1.0,
                 limit: 10000000,
                 smeOnly: true,
-                description: '100% CA on first RM10M'
+                description: '100% CA on first RM10M',
+                descriptionMy: '100% elaun modal pada RM10M pertama',
+                descriptionCn: '首1000万令吉资本支出可获得100%津贴'
             },
             {
                 id: 'carbon_project',
                 name: 'Carbon Credit Project',
                 nameMy: 'Projek kredit karbon',
+                nameCn: '碳信用项目',
                 deductionRate: 1.0,
                 limit: 300000,
                 smeOnly: true,
-                description: 'RM300,000 for carbon project development'
+                description: 'RM300,000 for carbon project development',
+                descriptionMy: 'RM300,000 untuk pembangunan projek karbon',
+                descriptionCn: '碳项目开发最高限额30万令吉'
             }
         ]
     }
 };
 
-// Freeze the data to prevent modification
-Object.freeze(TAX_DATA);
-Object.freeze(TAX_DATA.personalTaxBrackets);
-Object.freeze(TAX_DATA.smeTaxBrackets);
-Object.freeze(TAX_DATA.taxReliefs);
+const UI_TRANSLATIONS = {
+    en: {
+        setup: "Setup",
+        income: "Income",
+        reliefs: "Reliefs",
+        summary: "Summary",
+        welcome_title: "Welcome to MYTax Tracker",
+        welcome_subtitle: "Let's set up your tax profile",
+        income_question: "How do you earn income?",
+        employee: "Employee",
+        employee_desc: "Salary earner",
+        enterprise: "Enterprise",
+        enterprise_desc: "Sole Prop / Partnership",
+        company: "Company",
+        company_desc: "Sdn Bhd / LLP",
+        residency_status: "Residency Status:",
+        resident: "Tax Resident",
+        non_resident: "Non-Resident",
+        marital_status: "Marital Status:",
+        single: "Single",
+        married: "Married",
+        spouse_working: "Spouse's Employment:",
+        spouse_no: "Not Working / No Income",
+        spouse_yes: "Working / Has Income",
+        continue_btn: "Continue →",
+        monthly_salary: "Monthly Salary:",
+        bonus_months: "Bonus (months):",
+        other_annual_income: "Other Annual Income:",
+        epf_rate: "EPF Rate:",
+        annual_salary: "Salary (12 months)",
+        bonus: "Bonus",
+        other_income: "Other Income",
+        gross_annual_income: "Gross Annual Income",
+        epf_contribution: "EPF Contribution",
+        quick_estimate: "Quick Estimate",
+        chargeable_income: "Chargeable Income",
+        tax_payable: "Tax Payable",
+        effective_tax_rate: "Effective Tax Rate",
+        add_reliefs_note: "* Add tax reliefs to reduce your tax",
+        business_income: "Business Income",
+        annual_revenue: "Annual Business Revenue:",
+        revenue_hint: "Total revenue before deducting expenses",
+        chargeable_business_income: "Chargeable Business Income:",
+        business_income_hint: "Revenue minus allowable expenses (auto-calculated)",
+        business_tax_estimate: "Business Tax Estimate",
+        sme_status: "SME Status",
+        eligible: "Eligible ✓",
+        allowable_expenses: "Allowable Expenses",
+        track_expenses_subtitle: "Track your business expenses to reduce taxable income",
+        total_deductions: "Total Deductions",
+        tax_saved: "Tax Saved",
+        reliefs_tracker: "Tax Reliefs Tracker",
+        track_spending_subtitle: "Track your spending to maximize tax savings",
+        total_reliefs_used: "Total Reliefs Used",
+        potential_savings: "Potential Savings",
+        total_tax_overview: "Total Tax Overview YA 2024",
+        total_savings: "Total Savings",
+        monthly_estimate: "Monthly Estimate",
+        personal_tax: "Personal Tax",
+        less_epf: "Less: EPF Contribution",
+        less_reliefs: "Less: Tax Reliefs",
+        your_tax_bracket: "Your Tax Bracket",
+        business_tax: "Business Tax",
+        business_type: "Business Type",
+        your_savings: "Your Savings",
+        from_reliefs: "From Tax Reliefs",
+        from_sme: "From SME Rate (vs 24%)",
+        total_potential_savings: "Total Potential Savings",
+        relief_usage_progress: "Relief Usage Progress",
+        export_title: "📥 Export Tax Record",
+        export_desc: "Download your complete tax record for official submission to LHDN.",
+        download_excel: "Download Excel (.xlsx)",
+        export_note: "File includes: Income details, tax reliefs, business deductions, and calculated tax.",
+        footer_act: "Based on LHDN Income Tax Act 1967 (YA 2024/2025)",
+        footer_disclaimer: "For reference only. Consult a tax professional for advice.",
+        lang_select_title: "Select Language / 🌐 Pilih Bahasa / 选择语言",
+        lang_settings: "Language Settings",
+        privacy_policy: "Privacy Policy",
+        disclaimer_title: "⚠️ Disclaimer",
+        disclaimer_text: "This calculator is for reference purposes only. Tax calculations are based on publicly available LHDN guidelines and may not reflect your actual tax liability. Please consult a qualified tax professional or LHDN for official tax advice.",
+        dont_show_again: "Don't show again",
+        understand_btn: "I Understand",
+        relief_info_tooltip: "Includes RM9,000 automatic Individual Relief for yourself and dependent relatives."
+    },
+    ms: {
+        setup: "Tetapan",
+        income: "Pendapatan",
+        reliefs: "Pelepasan",
+        summary: "Ringkasan",
+        welcome_title: "Selamat Datang ke MYTax Tracker",
+        welcome_subtitle: "Jom tetapkan profil cukai anda",
+        income_question: "Bagaimanakah anda menjana pendapatan?",
+        employee: "Pekerja",
+        employee_desc: "Penerima Gaji",
+        enterprise: "Enterprise",
+        enterprise_desc: "Pemilik Tunggal / Perkongsian",
+        company: "Syarikat",
+        company_desc: "Sdn Bhd / LLP",
+        residency_status: "Status Mastautin:",
+        resident: "Mastautin Cukai",
+        non_resident: "Bukan Mastautin",
+        marital_status: "Status Perkahwinan:",
+        single: "Bujang",
+        married: "Berkahwin",
+        spouse_working: "Pekerjaan Pasangan:",
+        spouse_no: "Tidak Bekerja / Tiada Pendapatan",
+        spouse_yes: "Bekerja / Ada Pendapatan",
+        continue_btn: "Teruskan →",
+        monthly_salary: "Gaji Bulanan:",
+        bonus_months: "Bonus (bulan):",
+        other_annual_income: "Pendapatan Tahunan Lain:",
+        epf_rate: "Kadar KWSP:",
+        annual_salary: "Gaji (12 bulan)",
+        bonus: "Bonus",
+        other_income: "Pendapatan Lain",
+        gross_annual_income: "Jumlah Pendapatan Kasar",
+        epf_contribution: "Caruman KWSP",
+        quick_estimate: "Anggaran Pantas",
+        chargeable_income: "Pendapatan Bercukai",
+        tax_payable: "Cukai Kena Dibayar",
+        effective_tax_rate: "Kadar Cukai Efektif",
+        add_reliefs_note: "* Tambah pelepasan untuk kurangkan cukai",
+        business_income: "Pendapatan Perniagaan",
+        annual_revenue: "Hasil Perniagaan Tahunan:",
+        revenue_hint: "Jumlah hasil sebelum tolak perbelanjaan",
+        chargeable_business_income: "Pendapatan Perniagaan Bercukai:",
+        business_income_hint: "Hasil tolak perbelanjaan dibenarkan (dikira automatik)",
+        business_tax_estimate: "Anggaran Cukai Perniagaan",
+        sme_status: "Status PKS (SME)",
+        eligible: "Layak ✓",
+        allowable_expenses: "Perbelanjaan Dibenarkan",
+        track_expenses_subtitle: "Kesan perbelanjaan perniagaan untuk kurangkan cukai",
+        total_deductions: "Jumlah Potongan",
+        tax_saved: "Cukai Dijimatkan",
+        reliefs_tracker: "Penjejak Pelepasan Cukai",
+        track_spending_subtitle: "Jejaki perbelanjaan untuk memaksimumkan penjimatan cukai",
+        total_reliefs_used: "Jumlah Pelepasan Digunakan",
+        potential_savings: "Potensi Penjimatan",
+        total_tax_overview: "Gambaran Keseluruhan Cukai YA 2024",
+        total_savings: "Jumlah Penjimatan",
+        monthly_estimate: "Anggaran Bulanan",
+        personal_tax: "Cukai Peribadi",
+        less_epf: "Tolak: Caruman KWSP",
+        less_reliefs: "Tolak: Pelepasan Cukai",
+        your_tax_bracket: "Kurungan Cukai Anda",
+        business_tax: "Cukai Perniagaan",
+        business_type: "Jenis Syarikat",
+        your_savings: "Penjimatan Anda",
+        from_reliefs: "Dari Pelepasan Cukai",
+        from_sme: "Dari Kadar PKS (vs 24%)",
+        total_potential_savings: "Jumlah Potensi Penjimatan",
+        relief_usage_progress: "Kemajuan Penggunaan Pelepasan",
+        export_title: "📥 Eksport Rekod Cukai",
+        export_desc: "Muat turun rekod cukai lengkap anda untuk penyerahan rasmi ke LHDN.",
+        download_excel: "Muat Turun Excel (.xlsx)",
+        export_note: "Fail termasuk: Butiran pendapatan, pelepasan cukai, potongan perniagaan, dan cukai yang dikira.",
+        footer_act: "Berdasarkan Akta Cukai Pendapatan LHDN 1967 (YA 2024/2025)",
+        footer_disclaimer: "Untuk rujukan sahaja. Sila dapatkan nasihat pakar cukai.",
+        lang_select_title: "Pilih Bahasa / Select Language / 选择语言",
+        lang_settings: "Tetapan Bahasa",
+        privacy_policy: "Dasar Privasi",
+        disclaimer_title: "⚠️ Penafian",
+        disclaimer_text: "Kalkulator ini adalah untuk tujuan rujukan sahaja. Pengiraan cukai adalah berdasarkan garis panduan LHDN yang tersedia secara umum dan mungkin tidak mencerminkan liabiliti cukai sebenar anda. Sila rujuk pakar cukai bertauliah atau LHDN untuk nasihat rasmi.",
+        dont_show_again: "Jangan tunjuk lagi",
+        understand_btn: "Saya Faham",
+        relief_info_tooltip: "Termasuk pelepasan Individu automatik RM9,000 untuk diri sendiri dan tanggungan."
+    },
+    zh: {
+        setup: "设置",
+        income: "收入",
+        reliefs: "减免",
+        summary: "总结",
+        welcome_title: "欢迎使用 MYTax Tracker",
+        welcome_subtitle: "让我们开始设置您的税务资料",
+        income_question: "您的收入来源是什么？",
+        employee: "受薪人士",
+        employee_desc: "受薪员工 (EPF/PCB)",
+        enterprise: "独资企业",
+        enterprise_desc: "个人独资 / 合伙企业",
+        company: "私人有限公司",
+        company_desc: "Sdn Bhd / LLP",
+        residency_status: "居民身份：",
+        resident: "税务居民",
+        non_resident: "非税务居民",
+        marital_status: "婚姻状况：",
+        single: "单身",
+        married: "已婚",
+        spouse_working: "配偶就业情况：",
+        spouse_no: "无业 / 无收入",
+        spouse_yes: "就业 / 有收入",
+        continue_btn: "继续 →",
+        monthly_salary: "月薪：",
+        bonus_months: "年终奖金 (月)：",
+        other_annual_income: "其他年收入：",
+        epf_rate: "公积金率 (EPF)：",
+        annual_salary: "基本年薪 (12个月)",
+        bonus: "年终奖金",
+        other_income: "其他收入",
+        gross_annual_income: "年收入总额",
+        epf_contribution: "公积金扣除 (EPF)",
+        quick_estimate: "初步估算",
+        chargeable_income: "课税所得额",
+        tax_payable: "应缴税额",
+        effective_tax_rate: "有效税率",
+        add_reliefs_note: "* 添加税务减免项以降低您的税额",
+        business_income: "商业收入",
+        annual_revenue: "年商业营业额：",
+        revenue_hint: "扣除开销前的总营业额",
+        chargeable_business_income: "课税商业所得：",
+        business_income_hint: "营业额减去可扣除支出的余额（自动计算）",
+        business_tax_estimate: "企业税估算",
+        sme_status: "中小企业 (SME) 身份",
+        eligible: "符合资格 ✓",
+        allowable_expenses: "可扣税支出",
+        track_expenses_subtitle: "记录您的商业开销以降低应缴税额",
+        total_deductions: "总扣除额",
+        tax_saved: "节省税额",
+        reliefs_tracker: "税务减免记录",
+        track_spending_subtitle: "记录您的消费项以最大化税务减免",
+        total_reliefs_used: "已使用减免总额",
+        potential_savings: "潜在节省税额",
+        total_tax_overview: "YA 2024 年度税务总览",
+        total_savings: "总节省金额",
+        monthly_estimate: "月平均缴税估算",
+        personal_tax: "个人所得税",
+        less_epf: "减：公积金缴纳 (EPF)",
+        less_reliefs: "减：税务减免 (Reliefs)",
+        your_tax_bracket: "您的所属税率档次",
+        business_tax: "企业税",
+        business_type: "公司类型",
+        your_savings: "您的节省额",
+        from_reliefs: "来自税务减免",
+        from_sme: "来自中小企业优惠税率",
+        total_potential_savings: "总潜在节省金额",
+        relief_usage_progress: "减免项使用进度",
+        export_title: "📥 导出税务记录",
+        export_desc: "下载完整的税务记录，以便向 LHDN 正式报税。",
+        download_excel: "下载 Excel 表格 (.xlsx)",
+        export_note: "表格包含：收入详情、税务减免、商业扣除项以及计算出的税额。",
+        footer_act: "基于 LHDN 1967年所得税法令 (YA 2024/2025)",
+        footer_disclaimer: "仅供参考。如有官方税务建议，请咨询税务专家。",
+        lang_select_title: "选择语言 / Pilih Bahasa / Select Language",
+        lang_settings: "语言设置",
+        privacy_policy: "隐私政策",
+        disclaimer_title: "⚠️ 免责声明",
+        disclaimer_text: "此计算器仅供参考。税务计算基于 LHDN 发布的公开指南，可能无法反映您的实际税务责任。请咨询专业的税务顾问或 LHDN 以获取正式的税务建议。",
+        dont_show_again: "不再显示",
+        understand_btn: "我明白了",
+        relief_info_tooltip: "包含为您及受抚养家属提供的 RM9,000 个人自动减免额。"
+    }
+};
+
+Object.freeze(UI_TRANSLATIONS);
+
+// Make it global for browser access
+window.UI_TRANSLATIONS = UI_TRANSLATIONS;
 
 // Export for use in other modules
 if (typeof module !== 'undefined' && module.exports) {
-    module.exports = TAX_DATA;
+    module.exports = { ...TAX_DATA, UI_TRANSLATIONS };
 }
