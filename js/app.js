@@ -474,8 +474,14 @@ class MYTaxApp {
         const container = document.getElementById('businessDeductionCategories');
         if (!container) return;
 
-        const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
-        const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
+        // For Enterprise (Sole Prop/Partnership), they are NOT corporate entities
+        // Only Company type uses the businessType dropdown
+        let isCorpType = false;
+        if (this.incomeType === 'company') {
+            const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
+            isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
+        }
+        // Enterprise (sole-prop/partnership) is never corporate type
 
         const categories = TAX_DATA.businessDeductions;
         const lang = this.lang || 'en';
