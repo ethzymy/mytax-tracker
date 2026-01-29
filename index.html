@@ -232,150 +232,154 @@
                                 <div class="input-with-prefix">
                                     <span class="input-prefix">RM</span>
                                     <input type="number" id="otherIncome" class="form-input"
-                                        placeholder="Commission, part time, rental, etc." min="0" step="100" value="0">
+                                        placeholder="Commission, part time, etc." min="0" step="100" value="0">
                                 </div>
                             </div>
-                            <div class="form-row">
-                                <div class="form-group flex-1">
-                                    <label for="zakatInput" data-i18n="zakat_fitrah">Zakat / Fitrah Paid:</label>
-                                    <div class="input-with-prefix">
-                                        <span class="input-prefix">RM</span>
-                                        <input type="number" id="zakatInput" class="form-input" placeholder="0" min="0"
-                                            step="10">
-                                    </div>
-                                </div>
-                                <div class="form-group flex-small">
-                                    <label for="epfRate" data-i18n="epf_rate">EPF Rate:</label>
-                                    <div class="input-with-suffix">
-                                        <input type="number" id="epfRate" class="form-input" placeholder="11" min="0"
-                                            max="100" step="1" value="11">
-                                        <span class="input-suffix">%</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Auto-calculated Summary -->
-                            <div class="income-summary">
-                                <div class="income-summary-row">
-                                    <span data-i18n="annual_salary">Salary (12 months)</span>
-                                    <span id="annualSalary">RM 0</span>
-                                </div>
-                                <div class="income-summary-row">
-                                    <span data-i18n="bonus">Bonus</span>
-                                    <span id="annualBonus">RM 0</span>
-                                </div>
-                                <div class="income-summary-row">
-                                    <span data-i18n="other_income">Other Income</span>
-                                    <span id="otherIncomeDisplay">RM 0</span>
-                                </div>
-                                <div class="income-summary-row total">
-                                    <span data-i18n="gross_annual_income">Gross Annual Income</span>
-                                    <span id="annualIncome">RM 0</span>
-                                </div>
-                                <div class="income-summary-row">
-                                    <span data-i18n="epf_contribution">EPF Contribution</span>
-                                    <span id="epfContribution">- RM 0</span>
+                            <div class="form-group flex-small">
+                                <label for="epfRate" data-i18n="epf_rate">EPF Rate:</label>
+                                <div class="input-with-suffix">
+                                    <input type="number" id="epfRate" class="form-input" placeholder="11" min="0"
+                                        max="100" step="1" value="11">
+                                    <span class="input-suffix">%</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Quick Tax Estimate -->
-                        <div class="card highlight-card">
-                            <h2 class="card-title" data-i18n="quick_estimate">Quick Estimate</h2>
-                            <div class="estimate-grid">
-                                <div class="estimate-item">
-                                    <span class="estimate-label" data-i18n="chargeable_income">Chargeable Income</span>
-                                    <span class="estimate-value" id="chargeableIncome">RM 0</span>
-                                </div>
-                                <div class="estimate-item">
-                                    <span class="estimate-label" data-i18n="tax_payable">Tax Payable</span>
-                                    <span class="estimate-value highlight" id="taxPayable">RM 0</span>
-                                </div>
-                                <div class="estimate-item">
-                                    <span class="estimate-label" data-i18n="effective_tax_rate">Effective Tax
-                                        Rate</span>
-                                    <span class="estimate-value" id="effectiveRate">0%</span>
+                        <div class="form-row">
+                            <div class="form-group flex-1">
+                                <label for="zakatInput" data-i18n="zakat_fitrah">Zakat / Fitrah Paid:</label>
+                                <div class="input-with-prefix">
+                                    <span class="input-prefix">RM</span>
+                                    <input type="number" id="zakatInput" class="form-input" placeholder="0" min="0"
+                                        step="10">
                                 </div>
                             </div>
-                            <p class="estimate-note" data-i18n="add_reliefs_note">* Add tax reliefs to reduce your tax
-                            </p>
+                            <div class="form-group flex-small" style="visibility: hidden">
+                                <label>Spacer</label>
+                                <input class="form-input">
+                            </div>
+                        </div>
+
+                        <!-- Auto-calculated Summary -->
+                        <div class="income-summary">
+                            <div class="income-summary-row">
+                                <span data-i18n="annual_salary">Salary (12 months)</span>
+                                <span id="annualSalary">RM 0</span>
+                            </div>
+                            <div class="income-summary-row">
+                                <span data-i18n="bonus">Bonus</span>
+                                <span id="annualBonus">RM 0</span>
+                            </div>
+                            <div class="income-summary-row">
+                                <span data-i18n="other_income">Other Income</span>
+                                <span id="otherIncomeDisplay">RM 0</span>
+                            </div>
+                            <div class="income-summary-row total">
+                                <span data-i18n="gross_annual_income">Gross Annual Income</span>
+                                <span id="annualIncome">RM 0</span>
+                            </div>
+                            <div class="income-summary-row">
+                                <span data-i18n="epf_contribution">EPF Contribution</span>
+                                <span id="epfContribution">- RM 0</span>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Business Income Section (Enterprise/Company) -->
-                    <div id="businessIncomeSection" style="display: none;">
-                        <div class="card">
-                            <h2 class="card-title" data-i18n="business_income">🏪 Business Income</h2>
-
-                            <div class="form-group">
-                                <label for="annualRevenue" data-i18n="annual_revenue">Annual Business Revenue:</label>
-                                <div class="input-with-prefix">
-                                    <span class="input-prefix">RM</span>
-                                    <input type="number" id="annualRevenue" class="form-input" placeholder="e.g. 500000"
-                                        min="0" step="1000">
-                                </div>
-                                <span class="form-hint" data-i18n="revenue_hint">Total revenue before deducting
-                                    expenses</span>
+                    <!-- Quick Tax Estimate -->
+                    <div class="card highlight-card">
+                        <h2 class="card-title" data-i18n="quick_estimate">Quick Estimate</h2>
+                        <div class="estimate-grid">
+                            <div class="estimate-item">
+                                <span class="estimate-label" data-i18n="chargeable_income">Chargeable Income</span>
+                                <span class="estimate-value" id="chargeableIncome">RM 0</span>
                             </div>
-
-                            <div class="form-group">
-                                <label for="chargeableBusinessIncome" data-i18n="chargeable_business_income">Chargeable
-                                    Business Income:</label>
-                                <div class="input-with-prefix">
-                                    <span class="input-prefix">RM</span>
-                                    <input type="number" id="chargeableBusinessIncome" class="form-input"
-                                        placeholder="Auto-calculated" min="0" step="1000" readonly>
-                                </div>
-                                <span class="form-hint" data-i18n="business_income_hint">Revenue minus allowable
-                                    expenses
-                                    (auto-calculated)</span>
+                            <div class="estimate-item">
+                                <span class="estimate-label" data-i18n="tax_payable">Tax Payable</span>
+                                <span class="estimate-value highlight" id="taxPayable">RM 0</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label" data-i18n="effective_tax_rate">Effective Tax Rate</span>
+                                <span class="estimate-value" id="effectiveRate">0%</span>
                             </div>
                         </div>
+                        <p class="estimate-note" data-i18n="add_reliefs_note">* Add tax reliefs to reduce your tax</p>
+                    </div>
+                </div>
 
-                        <!-- Business Tax Estimate -->
-                        <div class="card highlight-card">
-                            <h2 class="card-title" data-i18n="business_tax_estimate">Business Tax Estimate</h2>
-                            <div class="estimate-grid">
-                                <div class="estimate-item">
-                                    <span class="estimate-label" data-i18n="sme_status">SME Status</span>
-                                    <span class="estimate-value" id="smeStatus" data-i18n="eligible">Eligible ✓</span>
-                                </div>
-                                <div class="estimate-item">
-                                    <span class="estimate-label" data-i18n="tax_payable">Tax Payable</span>
-                                    <span class="estimate-value highlight" id="businessTaxPayable">RM 0</span>
-                                </div>
-                                <div class="estimate-item">
-                                    <span class="estimate-label" data-i18n="effective_tax_rate">Effective Rate</span>
-                                    <span class="estimate-value" id="businessEffectiveRate">0%</span>
-                                </div>
+                <!-- Business Income Section (Enterprise/Company) -->
+                <div id="businessIncomeSection" style="display: none;">
+                    <div class="card">
+                        <h2 class="card-title" data-i18n="business_income">🏪 Business Income</h2>
+
+                        <div class="form-group">
+                            <label for="annualRevenue" data-i18n="annual_revenue">Annual Business Revenue:</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">RM</span>
+                                <input type="number" id="annualRevenue" class="form-input" placeholder="e.g. 500000"
+                                    min="0" step="1000">
                             </div>
+                            <span class="form-hint" data-i18n="revenue_hint">Total revenue before deducting
+                                expenses</span>
                         </div>
 
-                        <!-- Allowable Expenses Tracker -->
-                        <div class="card" id="businessDeductionsCard">
-                            <h2 class="card-title" data-i18n="allowable_expenses">💼 Allowable Expenses</h2>
-                            <p class="card-subtitle" data-i18n="track_expenses_subtitle">Track your business expenses to
-                                reduce taxable income</p>
-
-                            <div class="relief-summary">
-                                <div class="relief-summary-item">
-                                    <span class="relief-summary-label" data-i18n="total_deductions">Total
-                                        Deductions</span>
-                                    <span class="relief-summary-value" id="totalBusinessDeductions">RM 0</span>
-                                </div>
-                                <div class="relief-summary-item">
-                                    <span class="relief-summary-label" data-i18n="tax_saved">Tax Saved</span>
-                                    <span class="relief-summary-value highlight" id="businessDeductionSavings">RM
-                                        0</span>
-                                </div>
+                        <div class="form-group">
+                            <label for="chargeableBusinessIncome" data-i18n="chargeable_business_income">Chargeable
+                                Business Income:</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">RM</span>
+                                <input type="number" id="chargeableBusinessIncome" class="form-input"
+                                    placeholder="Auto-calculated" min="0" step="1000" readonly>
                             </div>
-                        </div>
-
-                        <!-- Business Deduction Categories -->
-                        <div class="deduction-categories" id="businessDeductionCategories">
-                            <!-- Will be populated by JavaScript -->
+                            <span class="form-hint" data-i18n="business_income_hint">Revenue minus allowable
+                                expenses
+                                (auto-calculated)</span>
                         </div>
                     </div>
+
+                    <!-- Business Tax Estimate -->
+                    <div class="card highlight-card">
+                        <h2 class="card-title" data-i18n="business_tax_estimate">Business Tax Estimate</h2>
+                        <div class="estimate-grid">
+                            <div class="estimate-item">
+                                <span class="estimate-label" data-i18n="sme_status">SME Status</span>
+                                <span class="estimate-value" id="smeStatus" data-i18n="eligible">Eligible ✓</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label" data-i18n="tax_payable">Tax Payable</span>
+                                <span class="estimate-value highlight" id="businessTaxPayable">RM 0</span>
+                            </div>
+                            <div class="estimate-item">
+                                <span class="estimate-label" data-i18n="effective_tax_rate">Effective Rate</span>
+                                <span class="estimate-value" id="businessEffectiveRate">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Allowable Expenses Tracker -->
+                    <div class="card" id="businessDeductionsCard">
+                        <h2 class="card-title" data-i18n="allowable_expenses">💼 Allowable Expenses</h2>
+                        <p class="card-subtitle" data-i18n="track_expenses_subtitle">Track your business expenses to
+                            reduce taxable income</p>
+
+                        <div class="relief-summary">
+                            <div class="relief-summary-item">
+                                <span class="relief-summary-label" data-i18n="total_deductions">Total
+                                    Deductions</span>
+                                <span class="relief-summary-value" id="totalBusinessDeductions">RM 0</span>
+                            </div>
+                            <div class="relief-summary-item">
+                                <span class="relief-summary-label" data-i18n="tax_saved">Tax Saved</span>
+                                <span class="relief-summary-value highlight" id="businessDeductionSavings">RM
+                                    0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Business Deduction Categories -->
+                    <div class="deduction-categories" id="businessDeductionCategories">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
             </section>
 
 
@@ -426,7 +430,7 @@
                             <span class="estimate-label" data-i18n="total_savings">Total Savings</span>
                             <span class="estimate-value" id="totalSavings">RM 0</span>
                         </div>
-                        <div class="estimate-item">
+                        <div class="estimate-item" id="monthlyTaxEstimateRow">
                             <span class="estimate-label" data-i18n="monthly_estimate">Monthly Estimate</span>
                             <span class="estimate-value" id="monthlyTax">RM 0</span>
                         </div>
@@ -559,7 +563,7 @@
             <p data-i18n="footer_act">Based on LHDN Income Tax Act 1967 (YA 2024/2025)</p>
             <p class="disclaimer" data-i18n="footer_disclaimer">For reference only. Consult a tax professional for
                 advice.</p>
-            <p style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.7;">v0.95</p>
+            <p style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.7;">v0.95.1</p>
             <p><a href="privacy.html" style="color: var(--accent-primary);" data-i18n="privacy_policy">Privacy
                     Policy</a></p>
         </footer>

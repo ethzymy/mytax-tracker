@@ -938,13 +938,13 @@ class MYTaxApp {
             const remaining = Math.max(0, reliefInfo.limit - currentAmount);
 
             if (remaining > 50) {
-                const possibleSavings = remaining * marginalRate;
-                if (possibleSavings > 0) {
+                const possibleSavings = this.calculator.calculateReliefSavings(remaining, result.chargeableIncome);
+                if (possibleSavings >= 10) {
                     const name = nameObj[lang] || nameObj.en;
                     const tipText = {
-                        en: `You could save up to **RM ${possibleSavings.toFixed(0)}** more by maximizing **${name}** (RM ${remaining.toLocaleString()} balance).`,
-                        ms: `Anda boleh jimat sehingga **RM ${possibleSavings.toFixed(0)}** lagi dengan memaksimumkan **${name}** (baki RM ${remaining.toLocaleString()}).`,
-                        zh: `通过用尽 **${name}** 额度（剩余 RM ${remaining.toLocaleString()}），您最高可再省税 **RM ${possibleSavings.toFixed(0)}**。`
+                        en: `You could save up to RM ${possibleSavings.toFixed(0)} more by maximizing ${name} (RM ${remaining.toLocaleString()} balance).`,
+                        ms: `Anda boleh jimat sehingga RM ${possibleSavings.toFixed(0)} lagi dengan memaksimumkan ${name} (baki RM ${remaining.toLocaleString()}).`,
+                        zh: `通过用尽 ${name} 额度（剩余 RM ${remaining.toLocaleString()}），您最高可再省税 RM ${possibleSavings.toFixed(0)}。`
                     };
                     tips.push({ icon, text: tipText[lang] || tipText.en });
                 }
@@ -963,12 +963,12 @@ class MYTaxApp {
             const current = this.userData.reliefs?.['medical_checkup'] || 0;
             const remaining = medicalCheckup.limit - current;
             if (remaining >= 500) {
-                const possibleSavings = remaining * marginalRate;
-                if (possibleSavings > 0) {
+                const possibleSavings = this.calculator.calculateReliefSavings(remaining, result.chargeableIncome);
+                if (possibleSavings >= 10) {
                     const tipText = {
-                        en: `A medical checkup before year-end could save you **RM ${possibleSavings.toFixed(0)}** in tax.`,
-                        ms: `Pemeriksaan perubatan sebelum hujung tahun boleh menjimatkan cukai sebanyak **RM ${possibleSavings.toFixed(0)}**.`,
-                        zh: `年度结束前进行体检，最高可为您省税 **RM ${possibleSavings.toFixed(0)}**。`
+                        en: `A medical checkup before year-end could save you RM ${possibleSavings.toFixed(0)} in tax.`,
+                        ms: `Pemeriksaan perubatan sebelum hujung tahun boleh menjimatkan cukai sebanyak RM ${possibleSavings.toFixed(0)}.`,
+                        zh: `年度结束前进行体检，最高可为您省税 RM ${possibleSavings.toFixed(0)}。`
                     };
                     tips.push({ icon: '🏥', text: tipText[lang] || tipText.en });
                 }
