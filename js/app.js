@@ -4,6 +4,7 @@
 
 class MYTaxApp {
     constructor() {
+        window.app = this; // Ensure global access for inline onclick events
         this.calculator = taxCalculator;
         this.userData = this.loadUserData();
         this.lang = localStorage.getItem('mytax-lang') || null;
@@ -163,7 +164,18 @@ class MYTaxApp {
         document.querySelectorAll('input[name="incomeType"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
                 this.incomeType = e.target.value;
+
+                // State Cleaning: prevent data pollution
+                if (this.incomeType === 'employee') {
+                    this.businessIncomeForPersonal = 0;
+                } else if (this.incomeType === 'company') {
+                    this.businessIncomeForPersonal = 0;
+                    this.calculatedIncome = null;
+                }
+
                 this.updateSetupUI();
+                this.updateIncomeSectionVisibility();
+                this.updateCalculations();
             });
         });
 
@@ -191,6 +203,11 @@ class MYTaxApp {
             this.updateBusinessCalculations();
         });
 
+        document.getElementById('companyType')?.addEventListener('change', (e) => {
+            this.updateBusinessTypeUI(e.target.value);
+            this.updateBusinessCalculations();
+        });
+
         // Theme toggle
         document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTheme());
 
@@ -202,13 +219,48 @@ class MYTaxApp {
     updateSetupUI() {
         const personalSection = document.getElementById('personalInfoSection');
         const companySection = document.getElementById('companyInfoSection');
+        const companyTypeSelect = document.getElementById('companyType');
+        const paidUpCapitalGroup = document.getElementById('paidUpCapital')?.closest('.form-group');
 
         if (this.incomeType === 'company') {
             personalSection?.classList.add('hidden');
             companySection?.classList.remove('hidden');
+            if (paidUpCapitalGroup) paidUpCapitalGroup.classList.remove('hidden');
+
+            if (companyTypeSelect) {
+                Array.from(companyTypeSelect.options).forEach(opt => {
+                    const isCorp = opt.value === 'sdn-bhd' || opt.value === 'llp';
+                    opt.hidden = !isCorp;
+                    opt.disabled = !isCorp;
+                });
+                if (companyTypeSelect.value === 'sole-prop' || companyTypeSelect.value === 'partnership') {
+                    companyTypeSelect.value = 'sdn-bhd';
+                }
+            }
+        } else if (this.incomeType === 'enterprise') {
+            personalSection?.classList.remove('hidden');
+            companySection?.classList.remove('hidden');
+            if (paidUpCapitalGroup) paidUpCapitalGroup.classList.add('hidden');
+
+            if (companyTypeSelect) {
+                Array.from(companyTypeSelect.options).forEach(opt => {
+                    const isEnterprise = opt.value === 'sole-prop' || opt.value === 'partnership';
+                    opt.hidden = !isEnterprise;
+                    opt.disabled = !isEnterprise;
+                });
+                if (companyTypeSelect.value === 'sdn-bhd' || companyTypeSelect.value === 'llp') {
+                    companyTypeSelect.value = 'sole-prop';
+                }
+            }
         } else {
+            // Employee mode
             personalSection?.classList.remove('hidden');
             companySection?.classList.add('hidden');
+        }
+
+        // Trigger business UI update based on current selection
+        if (companyTypeSelect) {
+            this.updateBusinessTypeUI(companyTypeSelect.value);
         }
     }
 
@@ -690,9 +742,9 @@ class MYTaxApp {
         const spouseWorking = document.getElementById('spouseWorking')?.value === 'yes';
 
         // For Sole Prop / Partnership: Add business income to personal income
-        const businessType = document.getElementById('businessType')?.value;
+        const businessType = document.getElementById('companyType')?.value;
         const isSoleProp = businessType === 'sole-prop' || businessType === 'partnership';
-        if (isSoleProp && this.businessIncomeForPersonal) {
+        if (this.incomeType === 'enterprise' && isSoleProp && this.businessIncomeForPersonal) {
             grossIncome += this.businessIncomeForPersonal;
         }
 
@@ -779,16 +831,26 @@ class MYTaxApp {
             }
         }
 
-        update('summaryChargeable', `RM ${result.chargeableIncome.toLocaleString()}`);
-        update('summaryTax', `RM ${result.finalTax.toLocaleString()}`);
+        const personalSummaryCard = document.getElementById('personalSummaryCard');
+        const businessSummaryCard = document.getElementById('businessSummaryCard');
 
-        // Get Business Tax Data
-        const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
+        // Show/Hide summary cards based on mode
+        const businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
+        const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
+
+        if (personalSummaryCard) personalSummaryCard.style.display = isCorpType ? 'none' : 'block';
+        if (businessSummaryCard) businessSummaryCard.style.display = isCorpType ? 'block' : 'none';
+
+        // Update Personal Tax specific summary fields if in Personal/Enterprise mode
+        if (!isCorpType) {
+            update('summaryChargeable', `RM ${result.chargeableIncome.toLocaleString()}`);
+            update('summaryTax', `RM ${result.finalTax.toLocaleString()}`);
+        }
+
         const chargeableBusinessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
         const paidUpCapital = parseFloat(document.getElementById('paidUpCapital')?.value) || 0;
         const annualRevenue = parseFloat(document.getElementById('annualRevenue')?.value) || 0;
 
-        const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
         const isSME = paidUpCapital <= 2500000 && annualRevenue <= 50000000;
 
         let businessTax = 0;
@@ -1066,7 +1128,7 @@ class MYTaxApp {
 
 
     updateBusinessCalculations() {
-        const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
+        const businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
         const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
         const isSoleProp = businessType === 'sole-prop' || businessType === 'partnership';
 
@@ -1096,6 +1158,15 @@ class MYTaxApp {
 
             // Update personal tax calculation with business income
             this.updateCalculations();
+
+            // Explicitly update the business estimate card UI for Sole Prop
+            const businessTaxEstimateCard = document.getElementById('corporateTaxBreakdown');
+            if (businessTaxEstimateCard) {
+                // For Sole Prop, we might want to hide the corporate-specific breakdown
+                // but keep the main estimate card visible
+                const smeStatusTag = document.getElementById('smeStatus');
+                if (smeStatusTag) smeStatusTag.textContent = 'N/A (Personal Tax)';
+            }
             return;
         }
 
