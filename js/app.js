@@ -4,9 +4,10 @@
 
 class MYTaxApp {
     constructor() {
-        window.app = this; // Ensure global access for inline onclick events
+        window.app = this;
         this.calculator = taxCalculator;
         this.userData = this.loadUserData();
+        this.incomeType = this.userData.activeMode || 'employee';
         this.lang = localStorage.getItem('mytax-lang') || null;
         this.init();
     }
@@ -163,19 +164,23 @@ class MYTaxApp {
         // Income type selection
         document.querySelectorAll('input[name="incomeType"]').forEach(radio => {
             radio.addEventListener('change', (e) => {
-                this.incomeType = e.target.value;
+                const newType = e.target.value;
+                if (newType === this.incomeType) return;
 
-                // State Cleaning: prevent data pollution
-                if (this.incomeType === 'employee') {
-                    this.businessIncomeForPersonal = 0;
-                } else if (this.incomeType === 'company') {
-                    this.businessIncomeForPersonal = 0;
-                    this.calculatedIncome = null;
-                }
+                // 1. Save current state before switching
+                this.saveActiveModeState();
+
+                // 2. Switch type
+                this.incomeType = newType;
+                this.userData.activeMode = newType;
+
+                // 3. Load target state
+                this.loadActiveModeState();
 
                 this.updateSetupUI();
                 this.updateIncomeSectionVisibility();
                 this.updateCalculations();
+                this.saveUserData();
             });
         });
 
@@ -393,15 +398,24 @@ class MYTaxApp {
     calculateAnnualIncome() {
         const monthlySalary = parseFloat(document.getElementById('monthlySalary')?.value) || 0;
         const bonusMonths = parseFloat(document.getElementById('bonusMonths')?.value) || 0;
-        const otherIncome = parseFloat(document.getElementById('otherIncome')?.value) || 0;
+        const otherIncome = parseFloat(document.getElementById('otherAnnualIncome')?.value) || 0;
         const epfRate = parseFloat(document.getElementById('epfRate')?.value) || 11;
+
+        // Persist to namespace immediately
+        if (this.userData.namespaces?.employee) {
+            const ns = this.userData.namespaces.employee;
+            ns.monthlySalary = monthlySalary;
+            ns.bonusMonths = bonusMonths;
+            ns.otherIncome = otherIncome;
+            ns.epfRate = epfRate;
+        }
 
         // Calculate components
         const annualSalary = monthlySalary * 12;
         const annualBonus = monthlySalary * bonusMonths;
         const grossAnnualIncome = annualSalary + annualBonus + otherIncome;
 
-        // EPF calculation (on salary and bonus only, capped at RM4,000)
+        // EPF calculation
         const epfableIncome = annualSalary + annualBonus;
         const epfContribution = Math.min(epfableIncome * (epfRate / 100), 4000);
 
@@ -417,13 +431,12 @@ class MYTaxApp {
         update('annualIncome', `RM ${grossAnnualIncome.toLocaleString()}`);
         update('epfContribution', `- RM ${epfContribution.toLocaleString()}`);
 
-        // Store calculated values for tax calculation
+        // Store for tax calculation (Legacy field, but keeping for compatibility)
         this.calculatedIncome = {
             gross: grossAnnualIncome,
             epf: epfContribution
         };
 
-        // Trigger tax recalculation
         this.updateCalculations();
     }
 
@@ -531,9 +544,10 @@ class MYTaxApp {
             progressFill.style.width = `${Math.min(100, (value / limit) * 100)}%`;
         }
 
-        // Save and recalculate
+        // Save to namespace
         if (!this.userData.reliefs) this.userData.reliefs = {};
         this.userData.reliefs[reliefId] = value;
+
         this.saveUserData();
         this.updateCalculations();
     }
@@ -639,8 +653,9 @@ class MYTaxApp {
         let value = parseFloat(input.value) || 0;
 
         // Save and recalculate
-        if (!this.userData.deductions) this.userData.deductions = {};
-        this.userData.deductions[deductionId] = value;
+        if (!this.userData.businessDeductions) this.userData.businessDeductions = {};
+        this.userData.businessDeductions[deductionId] = value;
+
         this.saveUserData();
         this.updateBusinessDeductionTotals();
         this.updateBusinessCalculations();
@@ -648,7 +663,7 @@ class MYTaxApp {
     }
 
     updateBusinessDeductionTotals() {
-        const deductions = this.userData.deductions || {};
+        const deductions = this.userData.businessDeductions || {};
         const categories = TAX_DATA.businessDeductions;
         let totalDeductions = 0;
         let totalAllowable = 0;
@@ -734,19 +749,27 @@ class MYTaxApp {
 
     // ===== Calculations =====
     updateCalculations() {
-        // Use calculated income from monthly inputs, or fallback to 0
-        let grossIncome = this.calculatedIncome?.gross || 0;
-        const epfContribution = this.calculatedIncome?.epf || 0;
+        let grossIncome = 0;
+        let epfContribution = 0;
+
+        // 1. Determine base income based on mode (Scoped)
+        if (this.incomeType === 'employee' || this.incomeType === 'enterprise') {
+            grossIncome = this.calculatedIncome?.gross || 0;
+            epfContribution = this.calculatedIncome?.epf || 0;
+        }
+
+        // 2. Add Business Income if Sole Prop/Partnership (Enterprise mode only)
+        if (this.incomeType === 'enterprise') {
+            const businessType = document.getElementById('companyType')?.value;
+            const isSoleProp = businessType === 'sole-prop' || businessType === 'partnership';
+            if (isSoleProp && this.businessIncomeForPersonal) {
+                grossIncome += this.businessIncomeForPersonal;
+            }
+        }
+
         const isResident = document.getElementById('residencyStatus')?.value !== 'non-resident';
         const maritalStatus = document.getElementById('maritalStatus')?.value || 'single';
         const spouseWorking = document.getElementById('spouseWorking')?.value === 'yes';
-
-        // For Sole Prop / Partnership: Add business income to personal income
-        const businessType = document.getElementById('companyType')?.value;
-        const isSoleProp = businessType === 'sole-prop' || businessType === 'partnership';
-        if (this.incomeType === 'enterprise' && isSoleProp && this.businessIncomeForPersonal) {
-            grossIncome += this.businessIncomeForPersonal;
-        }
 
         // Get all relief values
         const reliefs = this.userData.reliefs || {};
@@ -754,12 +777,14 @@ class MYTaxApp {
         // Add spouse relief if applicable
         if (maritalStatus === 'married' && !spouseWorking) {
             reliefs.spouse = 4000;
+        } else {
+            delete reliefs.spouse;
         }
 
         // Zakat
         const zakat = parseFloat(document.getElementById('zakatInput')?.value) || 0;
 
-        // Calculate
+        // 3. Perform Personal Tax Calculation
         const result = this.calculator.calculateFullTax({
             grossIncome,
             epfContribution,
@@ -770,7 +795,7 @@ class MYTaxApp {
             spouseWorking
         });
 
-        // Update UI
+        // 4. Update UI & Summary
         this.updateQuickEstimate(result);
         this.updateReliefSummary(result);
         this.updateTaxSummary(result);
@@ -778,10 +803,14 @@ class MYTaxApp {
         this.updateCategoryTotals();
         this.updateOptimizationTips(result);
 
-        // Save income data
-        this.userData.grossIncome = grossIncome;
-        this.userData.epfContribution = epfContribution;
-        this.saveUserData();
+        // Save metadata (non-namespaced bits for general compatibility)
+        this.userData.lastCalculatedRecord = {
+            mode: this.incomeType,
+            timestamp: Date.now()
+        };
+
+        // Final save to localStorage
+        localStorage.setItem('mytax-user-data', JSON.stringify(this.userData));
     }
 
     updateQuickEstimate(result) {
@@ -1054,17 +1083,84 @@ class MYTaxApp {
     loadUserData() {
         try {
             const saved = localStorage.getItem('mytax-user-data');
-            return saved ? JSON.parse(saved) : { reliefs: {} };
+            let data = saved ? JSON.parse(saved) : null;
+
+            // Migration / Initialization
+            if (!data || !data.namespaces) {
+                const oldReliefs = data?.reliefs || {};
+                data = {
+                    activeMode: 'employee',
+                    namespaces: {
+                        employee: { monthlySalary: 0, bonusMonths: 0, otherIncome: 0, epfRate: 0.11 },
+                        enterprise: { revenue: 0, businessType: 'sole-prop' },
+                        company: { revenue: 0, capital: 0, businessType: 'sdn-bhd' }
+                    },
+                    reliefs: oldReliefs,
+                    businessDeductions: {}
+                };
+            }
+            return data;
         } catch {
-            return { reliefs: {} };
+            return {
+                activeMode: 'employee',
+                namespaces: {
+                    employee: { monthlySalary: 0, bonusMonths: 0, otherIncome: 0, epfRate: 0.11 },
+                    enterprise: { revenue: 0, businessType: 'sole-prop' },
+                    company: { revenue: 0, capital: 0, businessType: 'sdn-bhd' }
+                },
+                reliefs: {},
+                businessDeductions: {}
+            };
         }
     }
 
     saveUserData() {
         try {
+            this.saveActiveModeState(); // Final harvest before saving
             localStorage.setItem('mytax-user-data', JSON.stringify(this.userData));
         } catch (e) {
             console.warn('Could not save user data:', e);
+        }
+    }
+
+    saveActiveModeState() {
+        if (!this.userData.namespaces) return;
+        const mode = this.incomeType;
+        const ns = this.userData.namespaces[mode];
+
+        if (mode === 'employee') {
+            ns.monthlySalary = parseFloat(document.getElementById('monthlySalary')?.value) || 0;
+            ns.bonusMonths = parseFloat(document.getElementById('bonusMonths')?.value) || 0;
+            ns.otherIncome = parseFloat(document.getElementById('otherAnnualIncome')?.value) || 0;
+            ns.epfRate = parseFloat(document.getElementById('epfRate')?.value) || 0.11;
+        } else if (mode === 'enterprise') {
+            ns.revenue = parseFloat(document.getElementById('annualRevenue')?.value) || 0;
+            ns.businessType = document.getElementById('companyType')?.value || 'sole-prop';
+        } else if (mode === 'company') {
+            ns.revenue = parseFloat(document.getElementById('annualRevenue')?.value) || 0;
+            ns.capital = parseFloat(document.getElementById('paidUpCapital')?.value) || 0;
+            ns.businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
+        }
+    }
+
+    loadActiveModeState() {
+        if (!this.userData.namespaces) return;
+        const mode = this.incomeType;
+        const ns = this.userData.namespaces[mode];
+
+        if (mode === 'employee') {
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+            set('monthlySalary', ns.monthlySalary || '');
+            set('bonusMonths', ns.bonusMonths || '');
+            set('otherAnnualIncome', ns.otherIncome || '');
+            set('epfRate', ns.epfRate || 0.11);
+            this.calculateAnnualIncome(); // Sync internals
+        } else if (mode === 'enterprise' || mode === 'company') {
+            const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+            set('annualRevenue', ns.revenue || '');
+            set('paidUpCapital', ns.capital || '');
+            set('companyType', ns.businessType);
+            this.updateBusinessDeductionTotals(); // Sync internals
         }
     }
 
