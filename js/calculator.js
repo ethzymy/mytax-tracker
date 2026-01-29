@@ -233,6 +233,7 @@ class TaxCalculator {
             grossIncome = 0,
             epfContribution = 0,
             reliefs = {},
+            zakat = 0,
             isResident = true,
             maritalStatus = 'single',
             spouseWorking = true
@@ -248,13 +249,14 @@ class TaxCalculator {
         const hasNonWorkingSpouse = maritalStatus === 'married' && !spouseWorking;
         const rebate = this.calculateRebate(incomeCalc.chargeableIncome, hasNonWorkingSpouse);
 
-        // Final tax after rebate
-        const finalTax = Math.max(0, taxCalc.taxPayable - rebate);
+        // Final tax after rebate and zakat
+        const finalTax = Math.max(0, taxCalc.taxPayable - rebate - zakat);
 
         return {
             ...incomeCalc,
             ...taxCalc,
             rebate,
+            zakat,
             finalTax,
             monthlyTax: finalTax / 12
         };

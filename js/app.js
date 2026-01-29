@@ -183,6 +183,7 @@ class MYTaxApp {
         document.getElementById('bonusMonths')?.addEventListener('input', () => this.calculateAnnualIncome());
         document.getElementById('otherIncome')?.addEventListener('input', () => this.calculateAnnualIncome());
         document.getElementById('epfRate')?.addEventListener('input', () => this.calculateAnnualIncome());
+        document.getElementById('zakatInput')?.addEventListener('input', () => this.updateCalculations());
 
         // Business income inputs
         document.getElementById('annualRevenue')?.addEventListener('input', () => {
@@ -703,11 +704,15 @@ class MYTaxApp {
             reliefs.spouse = 4000;
         }
 
+        // Zakat
+        const zakat = parseFloat(document.getElementById('zakatInput')?.value) || 0;
+
         // Calculate
         const result = this.calculator.calculateFullTax({
             grossIncome,
             epfContribution,
             reliefs,
+            zakat,
             isResident,
             maritalStatus,
             spouseWorking
@@ -719,6 +724,7 @@ class MYTaxApp {
         this.updateTaxSummary(result);
         this.updateReliefProgress(result);
         this.updateCategoryTotals();
+        this.updateOptimizationTips(result);
 
         // Save income data
         this.userData.grossIncome = grossIncome;
@@ -762,6 +768,17 @@ class MYTaxApp {
         update('summaryIncome', `RM ${result.grossIncome.toLocaleString()}`);
         update('summaryEpf', `- RM ${result.epfContribution.toLocaleString()}`);
         update('summaryReliefs', `- RM ${result.totalReliefs.toLocaleString()}`);
+
+        const zakatRow = document.getElementById('summaryZakatRow');
+        if (zakatRow) {
+            if (result.zakat > 0) {
+                zakatRow.style.display = 'flex';
+                update('summaryZakat', `- RM ${result.zakat.toLocaleString()}`);
+            } else {
+                zakatRow.style.display = 'none';
+            }
+        }
+
         update('summaryChargeable', `RM ${result.chargeableIncome.toLocaleString()}`);
         update('summaryTax', `RM ${result.finalTax.toLocaleString()}`);
 
@@ -892,6 +909,82 @@ class MYTaxApp {
             if (el) {
                 el.textContent = `RM ${total.toLocaleString()}`;
             }
+        }
+    }
+
+    /**
+     * Update Tax Optimization Tips based on unused relief limits
+     * @param {object} result - Calculation result
+     */
+    updateOptimizationTips(result) {
+        const container = document.getElementById('optimizationCard');
+        const list = document.getElementById('optimizationTipsList');
+        if (!container || !list) return;
+
+        const lang = this.lang || 'en';
+        const tips = [];
+        const marginalRate = result.bracket.rate / 100;
+
+        // If tax is already 0, no need for tips unless there's still taxable income
+        if (result.finalTax <= 0 && result.chargeableIncome <= 0) {
+            container.classList.add('hidden');
+            return;
+        }
+
+        const checkRelief = (id, icon, nameObj) => {
+            const reliefInfo = this.calculator.findReliefById(id);
+            if (!reliefInfo) return;
+            const currentAmount = this.userData.reliefs?.[id] || 0;
+            const remaining = Math.max(0, reliefInfo.limit - currentAmount);
+
+            if (remaining > 50) {
+                const possibleSavings = remaining * marginalRate;
+                if (possibleSavings > 0) {
+                    const name = nameObj[lang] || nameObj.en;
+                    const tipText = {
+                        en: `You could save up to **RM ${possibleSavings.toFixed(0)}** more by maximizing **${name}** (RM ${remaining.toLocaleString()} balance).`,
+                        ms: `Anda boleh jimat sehingga **RM ${possibleSavings.toFixed(0)}** lagi dengan memaksimumkan **${name}** (baki RM ${remaining.toLocaleString()}).`,
+                        zh: `通过用尽 **${name}** 额度（剩余 RM ${remaining.toLocaleString()}），您最高可再省税 **RM ${possibleSavings.toFixed(0)}**。`
+                    };
+                    tips.push({ icon, text: tipText[lang] || tipText.en });
+                }
+            }
+        };
+
+        // Key high-impact reliefs to check
+        checkRelief('lifestyle', '📚', { en: 'Lifestyle Relief', ms: 'Gaya Hidup', zh: '生活方式减免' });
+        checkRelief('sports', '🏸', { en: 'Sports Equipment', ms: 'Peralatan Sukan', zh: '运动器材减免' });
+        checkRelief('sspn', '🎓', { en: 'SSPN Savings', ms: 'Simpanan SSPN', zh: 'SSPN 教育储蓄' });
+        checkRelief('prs', '🛡️', { en: 'PRS Savings', ms: 'Simpanan PRS', zh: 'PRS 退休计划' });
+
+        // Specific hint for medical checkup
+        const medicalCheckup = this.calculator.findReliefById('medical_checkup');
+        if (medicalCheckup) {
+            const current = this.userData.reliefs?.['medical_checkup'] || 0;
+            const remaining = medicalCheckup.limit - current;
+            if (remaining >= 500) {
+                const possibleSavings = remaining * marginalRate;
+                if (possibleSavings > 0) {
+                    const tipText = {
+                        en: `A medical checkup before year-end could save you **RM ${possibleSavings.toFixed(0)}** in tax.`,
+                        ms: `Pemeriksaan perubatan sebelum hujung tahun boleh menjimatkan cukai sebanyak **RM ${possibleSavings.toFixed(0)}**.`,
+                        zh: `年度结束前进行体检，最高可为您省税 **RM ${possibleSavings.toFixed(0)}**。`
+                    };
+                    tips.push({ icon: '🏥', text: tipText[lang] || tipText.en });
+                }
+            }
+        }
+
+        if (tips.length > 0) {
+            container.classList.remove('hidden');
+            list.innerHTML = tips.map(tip => `
+                <div class="tip-item">
+                    <span class="tip-icon">${tip.icon}</span>
+                    <p class="tip-text">${tip.text}</p>
+                </div>
+            `).join('');
+        } else {
+            container.classList.add('hidden');
         }
     }
 

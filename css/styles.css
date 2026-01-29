@@ -1065,7 +1065,55 @@ body {
     }
 }
 
-/* ===== Animations ===== */
+/* Optimization Tips */
+.tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: var(--spacing-md);
+    background: rgba(0, 212, 212, 0.08);
+    border-radius: var(--radius-md);
+    border-left: 2px solid var(--accent-primary);
+}
+
+.tip-icon {
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.tip-text {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.5;
+}
+
+.tip-text b,
+.tip-text strong {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.badge-new {
+    background: var(--accent-primary);
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    vertical-align: middle;
+    margin-left: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Animations */
 @keyframes pulse {
 
     0%,

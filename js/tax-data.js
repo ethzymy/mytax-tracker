@@ -607,7 +607,11 @@ const UI_TRANSLATIONS = {
         disclaimer_text: "This calculator is for reference purposes only. Tax calculations are based on publicly available LHDN guidelines and may not reflect your actual tax liability. Please consult a qualified tax professional or LHDN for official tax advice.",
         dont_show_again: "Don't show again",
         understand_btn: "I Understand",
-        relief_info_tooltip: "Includes RM9,000 automatic Individual Relief for yourself and dependent relatives."
+        relief_info_tooltip: "Includes RM9,000 automatic Individual Relief for yourself and dependent relatives.",
+        zakat_fitrah: "Zakat / Fitrah Paid:",
+        less_zakat: "Less: Zakat / Fitrah",
+        smart_tips: "Smart Tax Tips",
+        feedback_support: "Bug Report & Suggestions"
     },
     ms: {
         setup: "Tetapan",
@@ -691,7 +695,11 @@ const UI_TRANSLATIONS = {
         disclaimer_text: "Kalkulator ini adalah untuk tujuan rujukan sahaja. Pengiraan cukai adalah berdasarkan garis panduan LHDN yang tersedia secara umum dan mungkin tidak mencerminkan liabiliti cukai sebenar anda. Sila rujuk pakar cukai bertauliah atau LHDN untuk nasihat rasmi.",
         dont_show_again: "Jangan tunjuk lagi",
         understand_btn: "Saya Faham",
-        relief_info_tooltip: "Termasuk pelepasan Individu automatik RM9,000 untuk diri sendiri dan tanggungan."
+        relief_info_tooltip: "Termasuk pelepasan Individu automatik RM9,000 untuk diri sendiri dan tanggungan.",
+        zakat_fitrah: "Zakat / Fitrah Dibayar:",
+        less_zakat: "Tolak: Zakat / Fitrah",
+        smart_tips: "Tips Cukai Pintar",
+        feedback_support: "Laporan Ralat & Cadangan"
     },
     zh: {
         setup: "设置",
@@ -775,7 +783,11 @@ const UI_TRANSLATIONS = {
         disclaimer_text: "此计算器仅供参考。税务计算基于 LHDN 发布的公开指南，可能无法反映您的实际税务责任。请咨询专业的税务顾问或 LHDN 以获取正式的税务建议。",
         dont_show_again: "不再显示",
         understand_btn: "我明白了",
-        relief_info_tooltip: "包含为您及受抚养家属提供的 RM9,000 个人自动减免额。"
+        relief_info_tooltip: "包含为您及受抚养家属提供的 RM9,000 个人自动减免额。",
+        zakat_fitrah: "Zakat / Fitrah 已付：",
+        less_zakat: "减：Zakat / Fitrah",
+        smart_tips: "智能税务建议",
+        feedback_support: "报错与优化建议"
     }
 };
 
