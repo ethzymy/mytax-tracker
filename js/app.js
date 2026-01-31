@@ -174,6 +174,20 @@ class MYTaxApp {
                 this.calculatedIncome = null;
                 this.businessIncomeForPersonal = 0;
 
+                // 3. Clear businessDeductions to prevent cross-mode contamination
+                this.userData.businessDeductions = {};
+
+                // 4. Reset business income UI inputs
+                const chargeableInput = document.getElementById('chargeableBusinessIncome');
+                const revenueInput = document.getElementById('annualRevenue');
+                if (chargeableInput) chargeableInput.value = '';
+                if (revenueInput) revenueInput.value = '';
+
+                // 5. Reset all deduction input fields
+                document.querySelectorAll('.deduction-input').forEach(input => {
+                    input.value = '';
+                });
+
                 // 3. Switch type
                 this.incomeType = newType;
                 this.userData.activeMode = newType;
