@@ -276,12 +276,24 @@ class MYTaxApp {
         const summaryNav = document.getElementById('summaryNavButtons');
         const mode = this.incomeType || 'employment';
 
-        // Helper to create button HTML
-        const createBtn = (label, icon, targetTab, cssClass) => {
-            return `<button class="btn ${cssClass}" onclick="app.switchTab(document.querySelector('[data-tab=\\'${targetTab}\\']'))">
-                        ${icon ? `<span class="btn-icon">${icon}</span>` : ''}
+        // Helper to create button HTML with data-target for event binding
+        const createBtn = (label, targetTab, isPrimary) => {
+            const cssClass = isPrimary ? 'btn btn-primary' : 'btn btn-secondary';
+            return `<button class="${cssClass}" data-nav-target="${targetTab}">
                         <span>${label}</span>
                     </button>`;
+        };
+
+        // Helper to bind click events after innerHTML
+        const bindNavEvents = (container) => {
+            if (!container) return;
+            container.querySelectorAll('[data-nav-target]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetTab = btn.getAttribute('data-nav-target');
+                    const tabBtn = document.querySelector(`[data-tab="${targetTab}"]`);
+                    if (tabBtn) this.switchTab(tabBtn);
+                });
+            });
         };
 
         // Clear all containers first
@@ -293,13 +305,15 @@ class MYTaxApp {
             // COMPANY: Income → Summary (skip Reliefs)
             if (incomeNav) {
                 incomeNav.innerHTML = `
-                    ${createBtn('← 返回', '', 'setup', 'btn-back')}
-                    ${createBtn('继续 →', '', 'summary', 'btn-continue')}
+                    ${createBtn('← 返回', 'setup', false)}
+                    ${createBtn('继续 →', 'summary', true)}
                 `;
+                bindNavEvents(incomeNav);
             }
             if (summaryNav) {
                 summaryNav.className = 'tab-nav-buttons single-button';
-                summaryNav.innerHTML = createBtn('← 返回', '', 'income', 'btn-back');
+                summaryNav.innerHTML = createBtn('← 返回', 'income', false);
+                bindNavEvents(summaryNav);
             }
             // Hide Reliefs nav (shouldn't be visible in Company mode anyway)
             if (reliefsNav) reliefsNav.innerHTML = '';
@@ -308,19 +322,22 @@ class MYTaxApp {
             // PERSONAL & ENTERPRISE: Income → Reliefs → Summary
             if (incomeNav) {
                 incomeNav.innerHTML = `
-                    ${createBtn('← 返回', '', 'setup', 'btn-back')}
-                    ${createBtn('继续 →', '', 'reliefs', 'btn-continue')}
+                    ${createBtn('← 返回', 'setup', false)}
+                    ${createBtn('继续 →', 'reliefs', true)}
                 `;
+                bindNavEvents(incomeNav);
             }
             if (reliefsNav) {
                 reliefsNav.innerHTML = `
-                    ${createBtn('← 返回', '', 'income', 'btn-back')}
-                    ${createBtn('继续 →', '', 'summary', 'btn-continue')}
+                    ${createBtn('← 返回', 'income', false)}
+                    ${createBtn('继续 →', 'summary', true)}
                 `;
+                bindNavEvents(reliefsNav);
             }
             if (summaryNav) {
                 summaryNav.className = 'tab-nav-buttons single-button';
-                summaryNav.innerHTML = createBtn('← 返回', '', 'reliefs', 'btn-back');
+                summaryNav.innerHTML = createBtn('← 返回', 'reliefs', false);
+                bindNavEvents(summaryNav);
             }
         }
     }

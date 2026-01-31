@@ -1292,25 +1292,25 @@ body {
     max-width: 200px;
 }
 
-.tab-nav-buttons .btn-back {
+.tab-nav-buttons .btn-secondary {
     background: var(--bg-secondary);
     color: var(--text-primary);
     border: var(--border-width) solid var(--border-color);
 }
 
-.tab-nav-buttons .btn-back:hover {
+.tab-nav-buttons .btn-secondary:hover {
     background: var(--bg-card-hover);
     box-shadow: var(--shadow-hover);
 }
 
-.tab-nav-buttons .btn-continue {
-    background: var(--cat-orange);
+.tab-nav-buttons .btn-primary {
+    background: var(--accent-gradient);
     color: white;
     border: var(--border-width) solid var(--border-color);
 }
 
-.tab-nav-buttons .btn-continue:hover {
-    background: var(--cat-orange-dark);
+.tab-nav-buttons .btn-primary:hover {
+    filter: brightness(1.1);
     box-shadow: var(--shadow-hover);
 }
 
