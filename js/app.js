@@ -1442,122 +1442,173 @@ class MYTaxApp {
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0];
             const yearAssessment = 2024;
-
-            // Get all current data
-            const grossIncome = this.calculatedIncome?.gross || 0;
-            const epfContribution = this.calculatedIncome?.epf || 0;
-            const monthlySalary = parseFloat(document.getElementById('monthlySalary')?.value) || 0;
-            const bonusMonths = parseFloat(document.getElementById('bonusMonths')?.value) || 0;
-            const otherIncome = parseFloat(document.getElementById('otherIncome')?.value) || 0;
-            const reliefs = this.userData.reliefs || {};
-            const deductions = this.userData.deductions || {};
-
-            // Sheet 1: Taxpayer Summary
-            const summaryData = [
-                ['MALAYSIA INCOME TAX RECORD'],
-                ['Year of Assessment (YA)', yearAssessment],
-                ['Generated Date', dateStr],
-                [''],
-                ['TAXPAYER INFORMATION'],
-                ['Residency Status', document.getElementById('residencyStatus')?.value || 'resident'],
-                ['Marital Status', document.getElementById('maritalStatus')?.value || 'single'],
-                [''],
-                ['INCOME SUMMARY'],
-                ['Monthly Salary (RM)', monthlySalary],
-                ['Number of Salary Months', 12],
-                ['Bonus Months', bonusMonths],
-                ['Annual Salary (RM)', monthlySalary * 12],
-                ['Annual Bonus (RM)', monthlySalary * bonusMonths],
-                ['Other Income (RM)', otherIncome],
-                ['Gross Annual Income (RM)', grossIncome],
-                [''],
-                ['STATUTORY DEDUCTIONS'],
-                ['EPF Contribution (RM)', epfContribution],
-                [''],
-                ['TAX CALCULATION'],
-                ['Total Tax Reliefs (RM)', Object.values(reliefs).reduce((a, b) => a + b, 0)],
-                ['Chargeable Income (RM)', document.getElementById('summaryChargeable')?.textContent || 'RM 0'],
-                ['Tax Payable (RM)', document.getElementById('summaryTax')?.textContent || 'RM 0'],
-            ];
-
-            // Sheet 2: Personal Tax Reliefs
-            const reliefsData = [
-                ['TAX RELIEFS CLAIMED - YA ' + yearAssessment],
-                [''],
-                ['Relief Category', 'Amount Claimed (RM)', 'Maximum Limit (RM)', 'Section'],
-                ['Self & Dependent Relatives', 9000, 9000, 'Section 46(1)(a)'],
-            ];
-
-            // Add user-entered reliefs
-            const allReliefs = TAX_DATA.taxReliefs;
-            for (const category of Object.values(allReliefs)) {
-                for (const relief of category) {
-                    if (reliefs[relief.id] && reliefs[relief.id] > 0) {
-                        reliefsData.push([relief.name, reliefs[relief.id], relief.limit, 'Section 46']);
-                    }
-                }
-            }
-
-            reliefsData.push(['']);
-            reliefsData.push(['TOTAL RELIEFS CLAIMED', Object.values(reliefs).reduce((a, b) => a + b, 0) + 9000]);
-
-            // Sheet 3: Business Deductions (if applicable)
-            const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
-            const businessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
-
-            const businessData = [
-                ['BUSINESS INCOME & DEDUCTIONS - YA ' + yearAssessment],
-                [''],
-                ['Business Type', businessType === 'sdn-bhd' ? 'Sdn Bhd (Private Limited)' :
-                    businessType === 'llp' ? 'LLP (Limited Liability Partnership)' :
-                        businessType === 'sole-prop' ? 'Sole Proprietor' : 'Partnership'],
-                [''],
-                ['ALLOWABLE EXPENSES'],
-                ['Expense Category', 'Amount (RM)', 'Deduction Rate', 'Allowable (RM)'],
-            ];
-
-            // Add business deductions
-            let totalDeductions = 0;
-            const allDeductions = TAX_DATA.businessDeductions;
-            for (const [categoryId, items] of Object.entries(allDeductions)) {
-                for (const item of items) {
-                    if (deductions[item.id] && deductions[item.id] > 0) {
-                        const allowable = deductions[item.id] * item.deductionRate;
-                        businessData.push([item.name, deductions[item.id], `${item.deductionRate * 100}%`, allowable]);
-                        totalDeductions += allowable;
-                    }
-                }
-            }
-
-            businessData.push(['']);
-            businessData.push(['TOTAL ALLOWABLE DEDUCTIONS', '', '', totalDeductions]);
-            businessData.push(['']);
-            businessData.push(['Gross Business Revenue', parseFloat(document.getElementById('annualRevenue')?.value) || 0]);
-            businessData.push(['Less: Allowable Deductions', totalDeductions]);
-            businessData.push(['Chargeable Business Income', businessIncome]);
-            businessData.push(['Business Tax Payable', document.getElementById('businessTaxPayable')?.textContent || 'RM 0']);
-
-            // Create workbook
             const wb = XLSX.utils.book_new();
+            const incomeType = this.incomeType || 'employment'; // 'employment', 'enterprise', 'company'
 
-            // Add sheets
-            const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
-            const ws2 = XLSX.utils.aoa_to_sheet(reliefsData);
-            const ws3 = XLSX.utils.aoa_to_sheet(businessData);
+            // --- Helper: Business Deductions Sheet (Used by Company & Enterprise) ---
+            const createBusinessSheet = () => {
+                const businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
+                const businessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
 
-            // Set column widths
-            ws1['!cols'] = [{ wch: 30 }, { wch: 20 }];
-            ws2['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 18 }, { wch: 15 }];
-            ws3['!cols'] = [{ wch: 35 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+                const businessData = [
+                    ['BUSINESS INCOME & DEDUCTIONS - YA ' + yearAssessment],
+                    [''],
+                    ['Business Type', businessType === 'sdn-bhd' ? 'Sdn Bhd (Private Limited)' :
+                        businessType === 'llp' ? 'LLP (Limited Liability Partnership)' :
+                            businessType === 'sole-prop' ? 'Sole Proprietor' : 'Partnership'],
+                    [''],
+                    ['ALLOWABLE EXPENSES'],
+                    ['Expense Category', 'Amount (RM)', 'Deduction Rate', 'Allowable (RM)'],
+                ];
 
-            XLSX.utils.book_append_sheet(wb, ws1, 'Tax Summary');
-            XLSX.utils.book_append_sheet(wb, ws2, 'Tax Reliefs');
-            XLSX.utils.book_append_sheet(wb, ws3, 'Business Deductions');
+                let totalDeductions = 0;
+                const deductions = this.userData.businessDeductions || {};
+                const allDeductions = TAX_DATA.businessDeductions;
+
+                for (const [categoryId, items] of Object.entries(allDeductions)) {
+                    for (const item of items) {
+                        if (deductions[item.id] && deductions[item.id] > 0) {
+                            const allowable = deductions[item.id] * item.deductionRate;
+                            businessData.push([item.name, deductions[item.id], `${item.deductionRate * 100}%`, allowable]);
+                            totalDeductions += allowable;
+                        }
+                    }
+                }
+
+                businessData.push(['']);
+                businessData.push(['TOTAL ALLOWABLE DEDUCTIONS', '', '', totalDeductions]);
+                businessData.push(['']);
+                businessData.push(['Gross Business Revenue', parseFloat(document.getElementById('annualRevenue')?.value) || 0]);
+                businessData.push(['Less: Allowable Deductions', totalDeductions]);
+                businessData.push(['Chargeable Business Income', businessIncome]);
+
+                // Effective tax for business card
+                const businessTax = document.getElementById('businessTaxPayable')?.textContent || 'RM 0';
+                businessData.push(['Estimated Tax (Business Part)', businessTax]);
+
+                const ws = XLSX.utils.aoa_to_sheet(businessData);
+                ws['!cols'] = [{ wch: 35 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+                return ws;
+            };
+
+            // --- Helper: Reliefs Sheet (Used by Personal & Enterprise) ---
+            const createReliefsSheet = () => {
+                const reliefsData = [
+                    ['TAX RELIEFS CLAIMED - YA ' + yearAssessment],
+                    [''],
+                    ['Relief Category', 'Amount Claimed (RM)', 'Maximum Limit (RM)', 'Section'],
+                    ['Self & Dependent Relatives', 9000, 9000, 'Section 46(1)(a)'],
+                ];
+
+                const reliefs = this.userData.reliefs || {};
+                const allReliefs = TAX_DATA.taxReliefs;
+                for (const category of Object.values(allReliefs)) {
+                    for (const relief of category) {
+                        if (reliefs[relief.id] && reliefs[relief.id] > 0) {
+                            reliefsData.push([relief.name, reliefs[relief.id], relief.limit, 'Section 46']);
+                        }
+                    }
+                }
+
+                reliefsData.push(['']);
+                reliefsData.push(['TOTAL RELIEFS CLAIMED', (Object.values(reliefs).reduce((a, b) => a + b, 0) + 9000)]);
+
+                const ws = XLSX.utils.aoa_to_sheet(reliefsData);
+                ws['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 18 }, { wch: 20 }];
+                return ws;
+            };
+
+
+            if (incomeType === 'company') {
+                // === COMPANY MODE: Corporate Tax Summary & Business Deductions ===
+                const isSME = document.getElementById('smeStatus')?.textContent.includes('Eligible');
+                const corporateData = [
+                    ['CORPORATE TAX RECORD - YA ' + yearAssessment],
+                    ['Generated Date', dateStr],
+                    [''],
+                    ['COMPANY INFORMATION'],
+                    ['Company Type', document.getElementById('companyType')?.value === 'llp' ? 'LLP' : 'Sdn Bhd'],
+                    ['Paid-up Capital (RM)', parseFloat(document.getElementById('paidUpCapital')?.value) || 0],
+                    ['SME Status', isSME ? 'Eligible (SME Rates)' : 'Non-SME (Flat 24%)'],
+                    [''],
+                    ['TAX CALCULATION'],
+                    ['Annual Revenue', parseFloat(document.getElementById('annualRevenue')?.value) || 0],
+                    ['Less: Business Deductions', parseFloat(document.getElementById('totalBusinessDeductions')?.textContent.replace('RM ', '').replace(/,/g, '')) || 0],
+                    ['Chargeable Income', parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0],
+                    [''],
+                    ['Tax Payable', document.getElementById('businessTaxPayable')?.textContent || 'RM 0'],
+                    ['Effective Tax Rate', document.getElementById('businessEffectiveRate')?.textContent || '0%'],
+                ];
+
+                const wsSummary = XLSX.utils.aoa_to_sheet(corporateData);
+                wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
+                XLSX.utils.book_append_sheet(wb, wsSummary, "Corporate Summary");
+                XLSX.utils.book_append_sheet(wb, createBusinessSheet(), "Business Deductions");
+
+            } else {
+                // === PERSONAL & ENTERPRISE MODE ===
+                const isEnterprise = incomeType === 'enterprise';
+                const grossIncome = isEnterprise
+                    ? parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0
+                    : this.calculatedIncome?.gross || 0;
+
+                const summaryData = [
+                    [`${isEnterprise ? 'BUSINESS (SOLE PROP)' : 'PERSONAL'} INCOME TAX RECORD`],
+                    ['Year of Assessment (YA)', yearAssessment],
+                    ['Generated Date', dateStr],
+                    [''],
+                    ['TAXPAYER INFORMATION'],
+                    ['Residency Status', document.getElementById('residencyStatus')?.value || 'resident'],
+                    ['Marital Status', document.getElementById('maritalStatus')?.value || 'single'],
+                    [''],
+                    ['INCOME SUMMARY'],
+                ];
+
+                if (isEnterprise) {
+                    summaryData.push(['Business Revenue', parseFloat(document.getElementById('annualRevenue')?.value) || 0]);
+                    summaryData.push(['Less: Business Deductions', parseFloat(document.getElementById('totalBusinessDeductions')?.textContent.replace('RM ', '').replace(/,/g, '')) || 0]);
+                    summaryData.push(['Net Business Income', grossIncome]);
+                } else {
+                    const monthlySalary = parseFloat(document.getElementById('monthlySalary')?.value) || 0;
+                    const bonusMonths = parseFloat(document.getElementById('bonusMonths')?.value) || 0;
+                    const otherIncome = parseFloat(document.getElementById('otherIncome')?.value) || 0;
+                    summaryData.push(['Annual Salary', monthlySalary * 12]);
+                    summaryData.push(['Annual Bonus', monthlySalary * bonusMonths]);
+                    summaryData.push(['Other Income', otherIncome]);
+                    summaryData.push(['Total Gross Income', grossIncome]);
+                }
+
+                summaryData.push(['']);
+                summaryData.push(['STATUTORY DEDUCTIONS']);
+                const epfLabel = isEnterprise ? 'Self-Contributed EPF (Relief)' : 'EPF Contribution';
+                const epfValue = isEnterprise
+                    ? (parseFloat(document.getElementById('soleEpfAnnual')?.textContent.replace('RM ', '').replace(/,/g, '')) || 0)
+                    : (this.calculatedIncome?.epf || 0);
+                summaryData.push([epfLabel, epfValue]);
+
+                summaryData.push(['']);
+                summaryData.push(['TAX CALCULATION']);
+                const reliefsTotal = (this.userData.reliefs ? Object.values(this.userData.reliefs).reduce((a, b) => a + b, 0) : 0) + 9000;
+                summaryData.push(['Total Tax Reliefs', reliefsTotal]);
+                summaryData.push(['Chargeable Income', document.getElementById('summaryChargeable')?.textContent || 'RM 0']);
+                summaryData.push(['Tax Payable', document.getElementById('summaryTax')?.textContent || 'RM 0']);
+
+                const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+                wsSummary['!cols'] = [{ wch: 30 }, { wch: 20 }];
+
+                XLSX.utils.book_append_sheet(wb, wsSummary, "Tax Summary");
+                XLSX.utils.book_append_sheet(wb, createReliefsSheet(), "Tax Reliefs");
+
+                if (isEnterprise) {
+                    XLSX.utils.book_append_sheet(wb, createBusinessSheet(), "Business Expenses");
+                }
+            }
 
             // Generate filename
-            const filename = `MYTax_Record_YA${yearAssessment}_${dateStr}.xlsx`;
+            const typePrefix = incomeType === 'company' ? 'Corporate' : (incomeType === 'enterprise' ? 'SoleProp' : 'Personal');
+            const filename = `MYTax_${typePrefix}_YA${yearAssessment}_${dateStr}.xlsx`;
 
-            // Download
+            // Download file
             XLSX.writeFile(wb, filename);
 
         } catch (error) {
@@ -1565,6 +1616,7 @@ class MYTaxApp {
             alert('Export failed: ' + error.message);
         }
     }
+
 
     // ===== Service Worker =====
 
