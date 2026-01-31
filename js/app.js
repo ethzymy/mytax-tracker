@@ -868,6 +868,8 @@ class MYTaxApp {
 
         const personalSummaryCard = document.getElementById('personalSummaryCard');
         const businessSummaryCard = document.getElementById('businessSummaryCard');
+        const reliefProgressCard = document.getElementById('reliefProgressCard');
+        const optimizationCard = document.getElementById('optimizationCard');
 
         // Show/Hide summary cards based on incomeType (NOT businessType dropdown)
         // Employee & Enterprise = Personal Tax Summary, Company = Business Tax Summary
@@ -875,6 +877,10 @@ class MYTaxApp {
 
         if (personalSummaryCard) personalSummaryCard.style.display = showPersonal ? 'block' : 'none';
         if (businessSummaryCard) businessSummaryCard.style.display = showPersonal ? 'none' : 'block';
+
+        // Hide personal-tax-only cards when in Company mode
+        if (reliefProgressCard) reliefProgressCard.style.display = showPersonal ? 'block' : 'none';
+        if (optimizationCard) optimizationCard.style.display = showPersonal ? 'block' : 'none';
 
         // Update Personal Tax specific summary fields if in Personal or Enterprise mode
         if (showPersonal) {
