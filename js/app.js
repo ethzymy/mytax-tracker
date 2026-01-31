@@ -1427,126 +1427,137 @@ class MYTaxApp {
 
     // ===== Excel Export =====
     exportToExcel() {
-        const today = new Date();
-        const dateStr = today.toISOString().split('T')[0];
-        const yearAssessment = 2024;
+        try {
+            if (typeof XLSX === 'undefined') {
+                alert('Excel library not loaded. Please check your internet connection.');
+                return;
+            }
 
-        // Get all current data
-        const grossIncome = this.calculatedIncome?.gross || 0;
-        const epfContribution = this.calculatedIncome?.epf || 0;
-        const monthlySalary = parseFloat(document.getElementById('monthlySalary')?.value) || 0;
-        const bonusMonths = parseFloat(document.getElementById('bonusMonths')?.value) || 0;
-        const otherIncome = parseFloat(document.getElementById('otherIncome')?.value) || 0;
-        const reliefs = this.userData.reliefs || {};
-        const deductions = this.userData.deductions || {};
+            const today = new Date();
+            const dateStr = today.toISOString().split('T')[0];
+            const yearAssessment = 2024;
 
-        // Sheet 1: Taxpayer Summary
-        const summaryData = [
-            ['MALAYSIA INCOME TAX RECORD'],
-            ['Year of Assessment (YA)', yearAssessment],
-            ['Generated Date', dateStr],
-            [''],
-            ['TAXPAYER INFORMATION'],
-            ['Residency Status', document.getElementById('residencyStatus')?.value || 'resident'],
-            ['Marital Status', document.getElementById('maritalStatus')?.value || 'single'],
-            [''],
-            ['INCOME SUMMARY'],
-            ['Monthly Salary (RM)', monthlySalary],
-            ['Number of Salary Months', 12],
-            ['Bonus Months', bonusMonths],
-            ['Annual Salary (RM)', monthlySalary * 12],
-            ['Annual Bonus (RM)', monthlySalary * bonusMonths],
-            ['Other Income (RM)', otherIncome],
-            ['Gross Annual Income (RM)', grossIncome],
-            [''],
-            ['STATUTORY DEDUCTIONS'],
-            ['EPF Contribution (RM)', epfContribution],
-            [''],
-            ['TAX CALCULATION'],
-            ['Total Tax Reliefs (RM)', Object.values(reliefs).reduce((a, b) => a + b, 0)],
-            ['Chargeable Income (RM)', document.getElementById('summaryChargeable')?.textContent || 'RM 0'],
-            ['Tax Payable (RM)', document.getElementById('summaryTax')?.textContent || 'RM 0'],
-        ];
+            // Get all current data
+            const grossIncome = this.calculatedIncome?.gross || 0;
+            const epfContribution = this.calculatedIncome?.epf || 0;
+            const monthlySalary = parseFloat(document.getElementById('monthlySalary')?.value) || 0;
+            const bonusMonths = parseFloat(document.getElementById('bonusMonths')?.value) || 0;
+            const otherIncome = parseFloat(document.getElementById('otherIncome')?.value) || 0;
+            const reliefs = this.userData.reliefs || {};
+            const deductions = this.userData.deductions || {};
 
-        // Sheet 2: Personal Tax Reliefs
-        const reliefsData = [
-            ['TAX RELIEFS CLAIMED - YA ' + yearAssessment],
-            [''],
-            ['Relief Category', 'Amount Claimed (RM)', 'Maximum Limit (RM)', 'Section'],
-            ['Self & Dependent Relatives', 9000, 9000, 'Section 46(1)(a)'],
-        ];
+            // Sheet 1: Taxpayer Summary
+            const summaryData = [
+                ['MALAYSIA INCOME TAX RECORD'],
+                ['Year of Assessment (YA)', yearAssessment],
+                ['Generated Date', dateStr],
+                [''],
+                ['TAXPAYER INFORMATION'],
+                ['Residency Status', document.getElementById('residencyStatus')?.value || 'resident'],
+                ['Marital Status', document.getElementById('maritalStatus')?.value || 'single'],
+                [''],
+                ['INCOME SUMMARY'],
+                ['Monthly Salary (RM)', monthlySalary],
+                ['Number of Salary Months', 12],
+                ['Bonus Months', bonusMonths],
+                ['Annual Salary (RM)', monthlySalary * 12],
+                ['Annual Bonus (RM)', monthlySalary * bonusMonths],
+                ['Other Income (RM)', otherIncome],
+                ['Gross Annual Income (RM)', grossIncome],
+                [''],
+                ['STATUTORY DEDUCTIONS'],
+                ['EPF Contribution (RM)', epfContribution],
+                [''],
+                ['TAX CALCULATION'],
+                ['Total Tax Reliefs (RM)', Object.values(reliefs).reduce((a, b) => a + b, 0)],
+                ['Chargeable Income (RM)', document.getElementById('summaryChargeable')?.textContent || 'RM 0'],
+                ['Tax Payable (RM)', document.getElementById('summaryTax')?.textContent || 'RM 0'],
+            ];
 
-        // Add user-entered reliefs
-        const allReliefs = TAX_DATA.taxReliefs;
-        for (const category of Object.values(allReliefs)) {
-            for (const relief of category) {
-                if (reliefs[relief.id] && reliefs[relief.id] > 0) {
-                    reliefsData.push([relief.name, reliefs[relief.id], relief.limit, 'Section 46']);
+            // Sheet 2: Personal Tax Reliefs
+            const reliefsData = [
+                ['TAX RELIEFS CLAIMED - YA ' + yearAssessment],
+                [''],
+                ['Relief Category', 'Amount Claimed (RM)', 'Maximum Limit (RM)', 'Section'],
+                ['Self & Dependent Relatives', 9000, 9000, 'Section 46(1)(a)'],
+            ];
+
+            // Add user-entered reliefs
+            const allReliefs = TAX_DATA.taxReliefs;
+            for (const category of Object.values(allReliefs)) {
+                for (const relief of category) {
+                    if (reliefs[relief.id] && reliefs[relief.id] > 0) {
+                        reliefsData.push([relief.name, reliefs[relief.id], relief.limit, 'Section 46']);
+                    }
                 }
             }
-        }
 
-        reliefsData.push(['']);
-        reliefsData.push(['TOTAL RELIEFS CLAIMED', Object.values(reliefs).reduce((a, b) => a + b, 0) + 9000]);
+            reliefsData.push(['']);
+            reliefsData.push(['TOTAL RELIEFS CLAIMED', Object.values(reliefs).reduce((a, b) => a + b, 0) + 9000]);
 
-        // Sheet 3: Business Deductions (if applicable)
-        const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
-        const businessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
+            // Sheet 3: Business Deductions (if applicable)
+            const businessType = document.getElementById('businessType')?.value || 'sdn-bhd';
+            const businessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
 
-        const businessData = [
-            ['BUSINESS INCOME & DEDUCTIONS - YA ' + yearAssessment],
-            [''],
-            ['Business Type', businessType === 'sdn-bhd' ? 'Sdn Bhd (Private Limited)' :
-                businessType === 'llp' ? 'LLP (Limited Liability Partnership)' :
-                    businessType === 'sole-prop' ? 'Sole Proprietor' : 'Partnership'],
-            [''],
-            ['ALLOWABLE EXPENSES'],
-            ['Expense Category', 'Amount (RM)', 'Deduction Rate', 'Allowable (RM)'],
-        ];
+            const businessData = [
+                ['BUSINESS INCOME & DEDUCTIONS - YA ' + yearAssessment],
+                [''],
+                ['Business Type', businessType === 'sdn-bhd' ? 'Sdn Bhd (Private Limited)' :
+                    businessType === 'llp' ? 'LLP (Limited Liability Partnership)' :
+                        businessType === 'sole-prop' ? 'Sole Proprietor' : 'Partnership'],
+                [''],
+                ['ALLOWABLE EXPENSES'],
+                ['Expense Category', 'Amount (RM)', 'Deduction Rate', 'Allowable (RM)'],
+            ];
 
-        // Add business deductions
-        let totalDeductions = 0;
-        const allDeductions = TAX_DATA.businessDeductions;
-        for (const [categoryId, items] of Object.entries(allDeductions)) {
-            for (const item of items) {
-                if (deductions[item.id] && deductions[item.id] > 0) {
-                    const allowable = deductions[item.id] * item.deductionRate;
-                    businessData.push([item.name, deductions[item.id], `${item.deductionRate * 100}%`, allowable]);
-                    totalDeductions += allowable;
+            // Add business deductions
+            let totalDeductions = 0;
+            const allDeductions = TAX_DATA.businessDeductions;
+            for (const [categoryId, items] of Object.entries(allDeductions)) {
+                for (const item of items) {
+                    if (deductions[item.id] && deductions[item.id] > 0) {
+                        const allowable = deductions[item.id] * item.deductionRate;
+                        businessData.push([item.name, deductions[item.id], `${item.deductionRate * 100}%`, allowable]);
+                        totalDeductions += allowable;
+                    }
                 }
             }
+
+            businessData.push(['']);
+            businessData.push(['TOTAL ALLOWABLE DEDUCTIONS', '', '', totalDeductions]);
+            businessData.push(['']);
+            businessData.push(['Gross Business Revenue', parseFloat(document.getElementById('annualRevenue')?.value) || 0]);
+            businessData.push(['Less: Allowable Deductions', totalDeductions]);
+            businessData.push(['Chargeable Business Income', businessIncome]);
+            businessData.push(['Business Tax Payable', document.getElementById('businessTaxPayable')?.textContent || 'RM 0']);
+
+            // Create workbook
+            const wb = XLSX.utils.book_new();
+
+            // Add sheets
+            const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
+            const ws2 = XLSX.utils.aoa_to_sheet(reliefsData);
+            const ws3 = XLSX.utils.aoa_to_sheet(businessData);
+
+            // Set column widths
+            ws1['!cols'] = [{ wch: 30 }, { wch: 20 }];
+            ws2['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 18 }, { wch: 15 }];
+            ws3['!cols'] = [{ wch: 35 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
+
+            XLSX.utils.book_append_sheet(wb, ws1, 'Tax Summary');
+            XLSX.utils.book_append_sheet(wb, ws2, 'Tax Reliefs');
+            XLSX.utils.book_append_sheet(wb, ws3, 'Business Deductions');
+
+            // Generate filename
+            const filename = `MYTax_Record_YA${yearAssessment}_${dateStr}.xlsx`;
+
+            // Download
+            XLSX.writeFile(wb, filename);
+
+        } catch (error) {
+            console.error('Export failed:', error);
+            alert('Export failed: ' + error.message);
         }
-
-        businessData.push(['']);
-        businessData.push(['TOTAL ALLOWABLE DEDUCTIONS', '', '', totalDeductions]);
-        businessData.push(['']);
-        businessData.push(['Gross Business Revenue', parseFloat(document.getElementById('annualRevenue')?.value) || 0]);
-        businessData.push(['Less: Allowable Deductions', totalDeductions]);
-        businessData.push(['Chargeable Business Income', businessIncome]);
-        businessData.push(['Business Tax Payable', document.getElementById('businessTaxPayable')?.textContent || 'RM 0']);
-
-        // Create workbook
-        const wb = XLSX.utils.book_new();
-
-        // Add sheets
-        const ws1 = XLSX.utils.aoa_to_sheet(summaryData);
-        const ws2 = XLSX.utils.aoa_to_sheet(reliefsData);
-        const ws3 = XLSX.utils.aoa_to_sheet(businessData);
-
-        // Set column widths
-        ws1['!cols'] = [{ wch: 30 }, { wch: 20 }];
-        ws2['!cols'] = [{ wch: 35 }, { wch: 18 }, { wch: 18 }, { wch: 15 }];
-        ws3['!cols'] = [{ wch: 35 }, { wch: 15 }, { wch: 15 }, { wch: 15 }];
-
-        XLSX.utils.book_append_sheet(wb, ws1, 'Tax Summary');
-        XLSX.utils.book_append_sheet(wb, ws2, 'Tax Reliefs');
-        XLSX.utils.book_append_sheet(wb, ws3, 'Business Deductions');
-
-        // Generate filename
-        const filename = `MYTax_Record_YA${yearAssessment}_${dateStr}.xlsx`;
-
-        // Download
-        XLSX.writeFile(wb, filename);
     }
 
     // ===== Service Worker =====
