@@ -523,6 +523,14 @@ class MYTaxApp {
                     categoryEl.classList.toggle('expanded');
                 });
             }
+
+            // Add input event listeners to ensure calculation works
+            const inputs = categoryEl.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    this.onReliefChange(e.target);
+                });
+            });
         }
     }
 
@@ -661,6 +669,14 @@ class MYTaxApp {
                     categoryEl.classList.toggle('expanded');
                 });
             }
+
+            // Add input event listeners to ensure calculation works
+            const inputs = categoryEl.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('input', (e) => {
+                    this.onDeductionChange(e.target);
+                });
+            });
         }
     }
 
