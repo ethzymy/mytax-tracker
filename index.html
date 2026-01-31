@@ -339,6 +339,23 @@
                                 expenses
                                 (auto-calculated)</span>
                         </div>
+
+                        <!-- EPF Self-Contribution for Sole Proprietors -->
+                        <div class="form-group" id="soleEpfSection" style="display: none;">
+                            <label for="soleEpfMonthly" data-i18n="sole_epf_monthly">Monthly EPF
+                                Self-Contribution:</label>
+                            <div class="input-with-prefix">
+                                <span class="input-prefix">RM</span>
+                                <input type="number" id="soleEpfMonthly" class="form-input" placeholder="e.g. 333"
+                                    min="0" max="333" step="1">
+                            </div>
+                            <span class="form-hint" data-i18n="sole_epf_hint">Self-contributed EPF (Max RM
+                                4,000/year)</span>
+                            <div class="epf-annual-display" id="soleEpfAnnualDisplay">
+                                <span data-i18n="annual_epf">Annual EPF:</span>
+                                <span id="soleEpfAnnual">RM 0</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Business Tax Estimate -->

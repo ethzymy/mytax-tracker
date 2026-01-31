@@ -226,6 +226,18 @@ class MYTaxApp {
             this.updateBusinessCalculations();
         });
 
+        // Sole Proprietor EPF Self-Contribution
+        document.getElementById('soleEpfMonthly')?.addEventListener('input', (e) => {
+            const monthly = parseFloat(e.target.value) || 0;
+            const annual = Math.min(monthly * 12, 4000); // Cap at RM 4,000/year
+            const annualDisplay = document.getElementById('soleEpfAnnual');
+            if (annualDisplay) {
+                annualDisplay.textContent = `RM ${annual.toLocaleString()}`;
+            }
+            this.updateCalculations();
+            this.saveUserData();
+        });
+
         document.getElementById('companyType')?.addEventListener('change', (e) => {
             this.updateBusinessTypeUI(e.target.value);
             this.updateBusinessCalculations();
@@ -779,7 +791,9 @@ class MYTaxApp {
             // Enterprise mode: ONLY business income (no salary)
             const chargeableBusinessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
             grossIncome = chargeableBusinessIncome;
-            epfContribution = 0; // No EPF for business income
+            // Sole Proprietor EPF Self-Contribution (capped at RM 4,000/year)
+            const soleEpfMonthly = parseFloat(document.getElementById('soleEpfMonthly')?.value) || 0;
+            epfContribution = Math.min(soleEpfMonthly * 12, 4000);
         } else if (this.incomeType === 'company') {
             // Company mode: Corporate tax calculation is handled separately
             // Personal tax summary is hidden, so we can set these to 0
@@ -1230,6 +1244,12 @@ class MYTaxApp {
         }
         if (corporateTaxBreakdown) {
             corporateTaxBreakdown.style.display = isCorpType ? 'block' : 'none';
+        }
+
+        // Show/Hide EPF Self-Contribution for Sole Proprietors
+        const soleEpfSection = document.getElementById('soleEpfSection');
+        if (soleEpfSection) {
+            soleEpfSection.style.display = isSoleProp ? 'block' : 'none';
         }
 
         // Business deductions are available for ALL business types

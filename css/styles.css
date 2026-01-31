@@ -1259,3 +1259,20 @@ body {
     color: var(--text-muted);
     font-style: italic;
 }
+
+/* ===== EPF Self-Contribution Display ===== */
+.epf-annual-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: var(--accent-gradient);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: white;
+}
+
+.epf-annual-display span:last-child {
+    font-size: 1.1rem;
+}
