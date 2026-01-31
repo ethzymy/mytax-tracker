@@ -170,11 +170,15 @@ class MYTaxApp {
                 // 1. Save current state before switching
                 this.saveActiveModeState();
 
-                // 2. Switch type
+                // 2. CRITICAL: Clear ALL calculation variables to prevent cross-contamination
+                this.calculatedIncome = null;
+                this.businessIncomeForPersonal = 0;
+
+                // 3. Switch type
                 this.incomeType = newType;
                 this.userData.activeMode = newType;
 
-                // 3. Load target state
+                // 4. Load target state
                 this.loadActiveModeState();
 
                 this.updateSetupUI();
@@ -752,19 +756,21 @@ class MYTaxApp {
         let grossIncome = 0;
         let epfContribution = 0;
 
-        // 1. Determine base income based on mode (Scoped)
-        if (this.incomeType === 'employee' || this.incomeType === 'enterprise') {
+        // CRITICAL: Each mode is COMPLETELY ISOLATED. No cross-mode aggregation.
+        if (this.incomeType === 'employee') {
+            // Employee mode: ONLY salary data
             grossIncome = this.calculatedIncome?.gross || 0;
             epfContribution = this.calculatedIncome?.epf || 0;
-        }
-
-        // 2. Add Business Income if Sole Prop/Partnership (Enterprise mode only)
-        if (this.incomeType === 'enterprise') {
-            const businessType = document.getElementById('companyType')?.value;
-            const isSoleProp = businessType === 'sole-prop' || businessType === 'partnership';
-            if (isSoleProp && this.businessIncomeForPersonal) {
-                grossIncome += this.businessIncomeForPersonal;
-            }
+        } else if (this.incomeType === 'enterprise') {
+            // Enterprise mode: ONLY business income (no salary)
+            const chargeableBusinessIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
+            grossIncome = chargeableBusinessIncome;
+            epfContribution = 0; // No EPF for business income
+        } else if (this.incomeType === 'company') {
+            // Company mode: Corporate tax calculation is handled separately
+            // Personal tax summary is hidden, so we can set these to 0
+            grossIncome = 0;
+            epfContribution = 0;
         }
 
         const isResident = document.getElementById('residencyStatus')?.value !== 'non-resident';
@@ -774,8 +780,8 @@ class MYTaxApp {
         // Get all relief values
         const reliefs = this.userData.reliefs || {};
 
-        // Add spouse relief if applicable
-        if (maritalStatus === 'married' && !spouseWorking) {
+        // Add spouse relief if applicable (only for personal tax modes)
+        if ((this.incomeType === 'employee' || this.incomeType === 'enterprise') && maritalStatus === 'married' && !spouseWorking) {
             reliefs.spouse = 4000;
         } else {
             delete reliefs.spouse;
@@ -784,7 +790,7 @@ class MYTaxApp {
         // Zakat
         const zakat = parseFloat(document.getElementById('zakatInput')?.value) || 0;
 
-        // 3. Perform Personal Tax Calculation
+        // Perform Personal Tax Calculation
         const result = this.calculator.calculateFullTax({
             grossIncome,
             epfContribution,
@@ -795,7 +801,7 @@ class MYTaxApp {
             spouseWorking
         });
 
-        // 4. Update UI & Summary
+        // Update UI & Summary
         this.updateQuickEstimate(result);
         this.updateReliefSummary(result);
         this.updateTaxSummary(result);
@@ -803,7 +809,7 @@ class MYTaxApp {
         this.updateCategoryTotals();
         this.updateOptimizationTips(result);
 
-        // Save metadata (non-namespaced bits for general compatibility)
+        // Save metadata
         this.userData.lastCalculatedRecord = {
             mode: this.incomeType,
             timestamp: Date.now()
@@ -863,15 +869,15 @@ class MYTaxApp {
         const personalSummaryCard = document.getElementById('personalSummaryCard');
         const businessSummaryCard = document.getElementById('businessSummaryCard');
 
-        // Show/Hide summary cards based on mode
-        const businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
-        const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
+        // Show/Hide summary cards based on incomeType (NOT businessType dropdown)
+        // Employee & Enterprise = Personal Tax Summary, Company = Business Tax Summary
+        const showPersonal = this.incomeType === 'employee' || this.incomeType === 'enterprise';
 
-        if (personalSummaryCard) personalSummaryCard.style.display = isCorpType ? 'none' : 'block';
-        if (businessSummaryCard) businessSummaryCard.style.display = isCorpType ? 'block' : 'none';
+        if (personalSummaryCard) personalSummaryCard.style.display = showPersonal ? 'block' : 'none';
+        if (businessSummaryCard) businessSummaryCard.style.display = showPersonal ? 'none' : 'block';
 
-        // Update Personal Tax specific summary fields if in Personal/Enterprise mode
-        if (!isCorpType) {
+        // Update Personal Tax specific summary fields if in Personal or Enterprise mode
+        if (showPersonal) {
             update('summaryChargeable', `RM ${result.chargeableIncome.toLocaleString()}`);
             update('summaryTax', `RM ${result.finalTax.toLocaleString()}`);
         }
@@ -881,11 +887,12 @@ class MYTaxApp {
         const annualRevenue = parseFloat(document.getElementById('annualRevenue')?.value) || 0;
 
         const isSME = paidUpCapital <= 2500000 && annualRevenue <= 50000000;
+        const isCompanyMode = this.incomeType === 'company';
 
         let businessTax = 0;
         let smeSavings = 0;
 
-        if (isCorpType && chargeableBusinessIncome > 0) {
+        if (isCompanyMode && chargeableBusinessIncome > 0) {
             const businessResult = this.calculator.calculateCorporateTax(chargeableBusinessIncome, isSME);
             businessTax = businessResult.taxPayable;
 
@@ -898,6 +905,7 @@ class MYTaxApp {
 
         // Business Tax Summary
         const lang = this.lang || 'en';
+        const businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
         const businessTypeNames = {
             'sdn-bhd': lang === 'zh' ? '私人有限公司 (Sdn Bhd)' : (lang === 'ms' ? 'Syarikat (Sdn Bhd)' : 'Sdn Bhd'),
             'llp': lang === 'zh' ? '有限责任合伙 (LLP)' : (lang === 'ms' ? 'Perkongsian Liabiliti Terhad (LLP)' : 'LLP'),
@@ -911,11 +919,16 @@ class MYTaxApp {
         const smeNotEligibleText = lang === 'zh' ? '不符合资格' : (lang === 'ms' ? 'Tidak Layak' : 'Not Eligible');
         const personalTaxText = lang === 'zh' ? '使用个人所得税' : (lang === 'ms' ? 'Guna Cukai Peribadi' : 'Use Personal');
 
-        update('summarySmeStatus', isCorpType ? (isSME ? smeEligibleText : smeNotEligibleText) : 'N/A');
-        update('summaryBusinessTax', isCorpType ? `RM ${businessTax.toLocaleString()}` : personalTaxText);
+        update('summarySmeStatus', isCompanyMode ? (isSME ? smeEligibleText : smeNotEligibleText) : 'N/A');
+        update('summaryBusinessTax', isCompanyMode ? `RM ${businessTax.toLocaleString()}` : personalTaxText);
 
-        // Total Tax Overview
-        const totalTax = result.finalTax + (isCorpType ? businessTax : 0);
+        // Total Tax Overview - ISOLATED by mode
+        let totalTax = 0;
+        if (this.incomeType === 'employee' || this.incomeType === 'enterprise') {
+            totalTax = result.finalTax; // Personal tax only
+        } else if (this.incomeType === 'company') {
+            totalTax = businessTax; // Corporate tax only
+        }
         update('totalTaxPayable', `RM ${totalTax.toLocaleString()}`);
         update('monthlyTax', `RM ${(totalTax / 12).toLocaleString()}`);
 
