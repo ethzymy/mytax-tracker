@@ -227,7 +227,9 @@ class MYTaxApp {
         document.getElementById('annualRevenue')?.addEventListener('input', () => {
             this.updateBusinessDeductionTotals();
             this.updateBusinessCalculations();
-            this.updateTaxSummary(); // Real-time summary update for Company mode
+            // CRITICAL: Call updateCalculations() to generate result for updateTaxSummary()
+            // This ensures the summary page updates in real-time for Company mode
+            this.updateCalculations();
         });
 
         // Sole Proprietor EPF Self-Contribution
@@ -501,7 +503,7 @@ class MYTaxApp {
             const categoryEl = document.createElement('div');
             categoryEl.className = 'relief-category';
             categoryEl.innerHTML = `
-                <div class="relief-category-header" onclick="app.toggleCategory(this)">
+                <div class="relief-category-header">
                     <div class="relief-category-title">
                         <span>${categoryInfo.icon}</span>
                         <span>${displayName}</span>
@@ -513,6 +515,14 @@ class MYTaxApp {
                 </div>
             `;
             container.appendChild(categoryEl);
+
+            // Add click event listener AFTER appending to DOM
+            const header = categoryEl.querySelector('.relief-category-header');
+            if (header) {
+                header.addEventListener('click', () => {
+                    categoryEl.classList.toggle('expanded');
+                });
+            }
         }
     }
 
@@ -630,7 +640,7 @@ class MYTaxApp {
             }
 
             categoryEl.innerHTML = `
-                <div class="relief-category-header" onclick="app.toggleCategory(this)">
+                <div class="relief-category-header">
                     <div class="relief-category-title">
                         <span>${categoryInfo.icon}</span>
                         <span>${displayName}</span>
@@ -643,6 +653,14 @@ class MYTaxApp {
                 </div>
             `;
             container.appendChild(categoryEl);
+
+            // Add click event listener AFTER appending to DOM
+            const header = categoryEl.querySelector('.relief-category-header');
+            if (header) {
+                header.addEventListener('click', () => {
+                    categoryEl.classList.toggle('expanded');
+                });
+            }
         }
     }
 
