@@ -1186,6 +1186,7 @@ body {
         --spacing-lg: 1rem;
     }
 }
+
 /* ===== SME Info Details ===== */
 .sme-info-details {
     margin-top: var(--spacing-md);
@@ -1240,7 +1241,7 @@ body {
 
 .sme-rate-table td {
     padding: var(--spacing-xs) var(--spacing-sm);
-    border-bottom: 1px solid rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .sme-rate-table td:first-child {
@@ -1275,4 +1276,49 @@ body {
 
 .epf-annual-display span:last-child {
     font-size: 1.1rem;
-}
+}
+
+/* ===== Tab Navigation Buttons ===== */
+.tab-nav-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md) 0;
+}
+
+.tab-nav-buttons .btn {
+    flex: 1;
+    max-width: 200px;
+}
+
+.tab-nav-buttons .btn-back {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: var(--border-width) solid var(--border-color);
+}
+
+.tab-nav-buttons .btn-back:hover {
+    background: var(--bg-card-hover);
+    box-shadow: var(--shadow-hover);
+}
+
+.tab-nav-buttons .btn-continue {
+    background: var(--cat-orange);
+    color: white;
+    border: var(--border-width) solid var(--border-color);
+}
+
+.tab-nav-buttons .btn-continue:hover {
+    background: var(--cat-orange-dark);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Single button centering (e.g., Summary page with only Back) */
+.tab-nav-buttons.single-button {
+    justify-content: flex-start;
+}
+
+.tab-nav-buttons.single-button .btn {
+    max-width: 150px;
+}

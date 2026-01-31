@@ -201,6 +201,7 @@ class MYTaxApp {
                 // Also refresh business calculations and summary for all modes
                 this.updateBusinessCalculations();
                 this.updateTaxSummary();
+                this.updateNavigationButtons(); // Update nav buttons based on new mode
                 this.saveUserData();
             });
         });
@@ -263,6 +264,65 @@ class MYTaxApp {
 
         // Load saved theme
         this.loadTheme();
+
+        // Initial navigation buttons render
+        this.updateNavigationButtons();
+    }
+
+    // ===== Mode-Aware Navigation Buttons =====
+    updateNavigationButtons() {
+        const incomeNav = document.getElementById('incomeNavButtons');
+        const reliefsNav = document.getElementById('reliefsNavButtons');
+        const summaryNav = document.getElementById('summaryNavButtons');
+        const mode = this.incomeType || 'employment';
+
+        // Helper to create button HTML
+        const createBtn = (label, icon, targetTab, cssClass) => {
+            return `<button class="btn ${cssClass}" onclick="app.switchTab(document.querySelector('[data-tab=\\'${targetTab}\\']'))">
+                        ${icon ? `<span class="btn-icon">${icon}</span>` : ''}
+                        <span>${label}</span>
+                    </button>`;
+        };
+
+        // Clear all containers first
+        if (incomeNav) incomeNav.innerHTML = '';
+        if (reliefsNav) reliefsNav.innerHTML = '';
+        if (summaryNav) summaryNav.innerHTML = '';
+
+        if (mode === 'company') {
+            // COMPANY: Income → Summary (skip Reliefs)
+            if (incomeNav) {
+                incomeNav.innerHTML = `
+                    ${createBtn('← 返回', '', 'setup', 'btn-back')}
+                    ${createBtn('继续 →', '', 'summary', 'btn-continue')}
+                `;
+            }
+            if (summaryNav) {
+                summaryNav.className = 'tab-nav-buttons single-button';
+                summaryNav.innerHTML = createBtn('← 返回', '', 'income', 'btn-back');
+            }
+            // Hide Reliefs nav (shouldn't be visible in Company mode anyway)
+            if (reliefsNav) reliefsNav.innerHTML = '';
+
+        } else {
+            // PERSONAL & ENTERPRISE: Income → Reliefs → Summary
+            if (incomeNav) {
+                incomeNav.innerHTML = `
+                    ${createBtn('← 返回', '', 'setup', 'btn-back')}
+                    ${createBtn('继续 →', '', 'reliefs', 'btn-continue')}
+                `;
+            }
+            if (reliefsNav) {
+                reliefsNav.innerHTML = `
+                    ${createBtn('← 返回', '', 'income', 'btn-back')}
+                    ${createBtn('继续 →', '', 'summary', 'btn-continue')}
+                `;
+            }
+            if (summaryNav) {
+                summaryNav.className = 'tab-nav-buttons single-button';
+                summaryNav.innerHTML = createBtn('← 返回', '', 'reliefs', 'btn-back');
+            }
+        }
     }
 
     // ===== Setup UI Logic =====
