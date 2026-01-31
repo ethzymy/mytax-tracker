@@ -3,7 +3,7 @@
  * Enables offline functionality
  */
 
-const CACHE_NAME = 'mytax-v0.94';
+const CACHE_NAME = 'mytax-v1.0.0';
 const ASSETS_TO_CACHE = [
     '/',
     '/index.html',

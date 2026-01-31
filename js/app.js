@@ -20,7 +20,6 @@ class MYTaxApp {
         this.bindMenuEvents();
         this.bindInfoTooltips();
         this.updateSetupUI();
-        this.registerServiceWorker();
     }
 
     // ===== Language Management =====
@@ -1695,18 +1694,7 @@ class MYTaxApp {
     }
 
 
-    // ===== Service Worker =====
 
-    async registerServiceWorker() {
-        if ('serviceWorker' in navigator) {
-            try {
-                await navigator.serviceWorker.register('sw.js');
-                console.log('Service Worker registered');
-            } catch (e) {
-                console.warn('Service Worker registration failed:', e);
-            }
-        }
-    }
 }
 
 
