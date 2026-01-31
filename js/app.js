@@ -87,6 +87,7 @@ class MYTaxApp {
             this.renderReliefCategories();
             this.renderBusinessDeductions();
             this.updateCalculations();
+            this.updateNavigationButtons(); // Refresh nav buttons with new language
         }
     }
 
@@ -274,6 +275,11 @@ class MYTaxApp {
         const reliefsNav = document.getElementById('reliefsNavButtons');
         const summaryNav = document.getElementById('summaryNavButtons');
         const mode = this.incomeType || 'employment';
+        const lang = this.lang || 'en';
+        const translations = UI_TRANSLATIONS[lang] || UI_TRANSLATIONS['en'];
+
+        const backLabel = translations.nav_back || '← Back';
+        const continueLabel = translations.nav_continue || 'Continue →';
 
         // Helper to create button HTML with data-target for event binding
         const createBtn = (label, targetTab, isPrimary) => {
@@ -304,14 +310,14 @@ class MYTaxApp {
             // COMPANY: Income → Summary (skip Reliefs)
             if (incomeNav) {
                 incomeNav.innerHTML = `
-                    ${createBtn('← 返回', 'setup', false)}
-                    ${createBtn('继续 →', 'summary', true)}
+                    ${createBtn(backLabel, 'setup', false)}
+                    ${createBtn(continueLabel, 'summary', true)}
                 `;
                 bindNavEvents(incomeNav);
             }
             if (summaryNav) {
                 summaryNav.className = 'tab-nav-buttons single-button';
-                summaryNav.innerHTML = createBtn('← 返回', 'income', false);
+                summaryNav.innerHTML = createBtn(backLabel, 'income', false);
                 bindNavEvents(summaryNav);
             }
             // Hide Reliefs nav (shouldn't be visible in Company mode anyway)
@@ -321,21 +327,21 @@ class MYTaxApp {
             // PERSONAL & ENTERPRISE: Income → Reliefs → Summary
             if (incomeNav) {
                 incomeNav.innerHTML = `
-                    ${createBtn('← 返回', 'setup', false)}
-                    ${createBtn('继续 →', 'reliefs', true)}
+                    ${createBtn(backLabel, 'setup', false)}
+                    ${createBtn(continueLabel, 'reliefs', true)}
                 `;
                 bindNavEvents(incomeNav);
             }
             if (reliefsNav) {
                 reliefsNav.innerHTML = `
-                    ${createBtn('← 返回', 'income', false)}
-                    ${createBtn('继续 →', 'summary', true)}
+                    ${createBtn(backLabel, 'income', false)}
+                    ${createBtn(continueLabel, 'summary', true)}
                 `;
                 bindNavEvents(reliefsNav);
             }
             if (summaryNav) {
                 summaryNav.className = 'tab-nav-buttons single-button';
-                summaryNav.innerHTML = createBtn('← 返回', 'reliefs', false);
+                summaryNav.innerHTML = createBtn(backLabel, 'reliefs', false);
                 bindNavEvents(summaryNav);
             }
         }

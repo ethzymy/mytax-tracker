@@ -628,7 +628,9 @@ const UI_TRANSLATIONS = {
         zakat_fitrah: "Zakat / Fitrah Paid:",
         less_zakat: "Less: Zakat / Fitrah",
         smart_tips: "Smart Tax Tips",
-        feedback_support: "Bug Report & Suggestions"
+        feedback_support: "Bug Report & Suggestions",
+        nav_back: "← Back",
+        nav_continue: "Continue →"
     },
     ms: {
         setup: "Tetapan",
@@ -733,7 +735,9 @@ const UI_TRANSLATIONS = {
         zakat_fitrah: "Zakat / Fitrah Dibayar:",
         less_zakat: "Tolak: Zakat / Fitrah",
         smart_tips: "Tips Cukai Pintar",
-        feedback_support: "Laporan Ralat & Cadangan"
+        feedback_support: "Laporan Ralat & Cadangan",
+        nav_back: "← Kembali",
+        nav_continue: "Teruskan →"
     },
     zh: {
         setup: "设置",
@@ -838,7 +842,9 @@ const UI_TRANSLATIONS = {
         zakat_fitrah: "Zakat / Fitrah 已付：",
         less_zakat: "减：Zakat / Fitrah",
         smart_tips: "智能税务建议",
-        feedback_support: "报错与优化建议"
+        feedback_support: "报错与优化建议",
+        nav_back: "← 返回",
+        nav_continue: "继续 →"
     }
 };
 
