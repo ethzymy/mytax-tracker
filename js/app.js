@@ -198,6 +198,9 @@ class MYTaxApp {
                 this.updateSetupUI();
                 this.updateIncomeSectionVisibility();
                 this.updateCalculations();
+                // Also refresh business calculations and summary for all modes
+                this.updateBusinessCalculations();
+                this.updateTaxSummary();
                 this.saveUserData();
             });
         });
@@ -1250,6 +1253,12 @@ class MYTaxApp {
         const soleEpfSection = document.getElementById('soleEpfSection');
         if (soleEpfSection) {
             soleEpfSection.style.display = isSoleProp ? 'block' : 'none';
+        }
+
+        // Show Business Tax Estimate card ONLY for Company mode (Sdn Bhd / LLP)
+        const businessTaxEstimateCard = document.getElementById('businessTaxEstimateCard');
+        if (businessTaxEstimateCard) {
+            businessTaxEstimateCard.style.display = isCorpType ? 'block' : 'none';
         }
 
         // Business deductions are available for ALL business types
