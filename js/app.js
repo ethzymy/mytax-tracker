@@ -1235,13 +1235,15 @@ class MYTaxApp {
         // Business deductions are available for ALL business types
         if (businessDeductionsCard) {
             businessDeductionsCard.style.display = 'block';
-            // Update the title based on business type
+            // Update the title based on business type using i18n
             const title = businessDeductionsCard.querySelector('.card-title');
             if (title) {
+                const lang = this.lang || 'en';
+                const translations = TAX_DATA.translations[lang] || TAX_DATA.translations.en;
                 if (isSoleProp) {
-                    title.textContent = '💼 Business Expenses (Reduces Taxable Income)';
+                    title.textContent = '💼 ' + (translations.business_expenses_sole || 'Business Expenses (Reduces Taxable Income)');
                 } else {
-                    title.textContent = '💼 Allowable Expenses (Corporate Deductions)';
+                    title.textContent = '💼 ' + (translations.allowable_expenses_corp || 'Allowable Expenses (Corporate Deductions)');
                 }
             }
         }
