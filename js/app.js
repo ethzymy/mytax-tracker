@@ -224,9 +224,12 @@ class MYTaxApp {
         document.getElementById('zakatInput')?.addEventListener('input', () => this.updateCalculations());
 
         // Business income inputs
-        document.getElementById('annualRevenue')?.addEventListener('input', () => {
-            this.updateBusinessDeductionTotals();
-            this.updateBusinessCalculations();
+        document.getElementById('annualRevenue')?.addEventListener('input', (e) => {
+            const { totalAllowable } = this.updateBusinessDeductionTotals();
+            const revenue = parseFloat(e.target.value) || 0;
+            const chargeable = Math.max(0, revenue - totalAllowable);
+
+            this.updateBusinessCalculations(chargeable);
             // CRITICAL: Call updateCalculations() to generate result for updateTaxSummary()
             // This ensures the summary page updates in real-time for Company mode
             this.updateCalculations();
@@ -1322,12 +1325,17 @@ class MYTaxApp {
     }
 
 
-    updateBusinessCalculations() {
+    updateBusinessCalculations(chargeableOverride = null) {
         const businessType = document.getElementById('companyType')?.value || 'sdn-bhd';
         const isCorpType = businessType === 'sdn-bhd' || businessType === 'llp';
         const isSoleProp = businessType === 'sole-prop' || businessType === 'partnership';
 
-        const chargeableIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
+        let chargeableIncome;
+        if (chargeableOverride !== null) {
+            chargeableIncome = chargeableOverride;
+        } else {
+            chargeableIncome = parseFloat(document.getElementById('chargeableBusinessIncome')?.value) || 0;
+        }
 
         if (isSoleProp) {
             // For sole proprietor/partnership - sync to personal tax
