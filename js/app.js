@@ -255,6 +255,12 @@ class MYTaxApp {
         // Theme toggle
         document.getElementById('themeToggle')?.addEventListener('click', () => this.toggleTheme());
 
+        // Export button
+        document.getElementById('exportExcel')?.addEventListener('click', () => {
+            console.log('Export button clicked');
+            this.exportToExcel();
+        });
+
         // Load saved theme
         this.loadTheme();
     }
