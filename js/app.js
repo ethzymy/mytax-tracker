@@ -227,6 +227,7 @@ class MYTaxApp {
         document.getElementById('annualRevenue')?.addEventListener('input', () => {
             this.updateBusinessDeductionTotals();
             this.updateBusinessCalculations();
+            this.updateTaxSummary(); // Real-time summary update for Company mode
         });
 
         // Sole Proprietor EPF Self-Contribution

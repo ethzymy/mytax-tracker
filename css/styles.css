@@ -1275,30 +1275,4 @@ body {
 
 .epf-annual-display span:last-child {
     font-size: 1.1rem;
-}
-
-/* ===== Expand Arrow for Relief Categories ===== */
-.relief-category-header::after {
-    content: '?';
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    transition: transform 0.3s ease;
-    margin-left: var(--spacing-sm);
-}
-
-.relief-category.expanded .relief-category-header::after {
-    transform: rotate(180deg);
-}
-
-/* Ensure all relief categories start expanded for better UX */
-.relief-category .relief-category-items {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-    padding: 0 var(--spacing-md);
-}
-
-.relief-category.expanded .relief-category-items {
-    max-height: 2000px;
-    padding: 0 var(--spacing-md) var(--spacing-md);
-}
+}
