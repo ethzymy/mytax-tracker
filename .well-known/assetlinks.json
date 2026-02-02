@@ -1,0 +1,14 @@
+[
+    {
+        "relation": [
+            "delegate_permission/common.handle_all_urls"
+        ],
+        "target": {
+            "namespace": "android_app",
+            "package_name": "my.ethzy.tax.twa",
+            "sha256_cert_fingerprints": [
+                "9D:D1:15:77:F5:3F:53:E8:B5:65:3E:2E:42:93:C4:43:75:0E:CC:B2:BD:14:8F:18:E6:A6:1F:CC:00:0E:8C:5C"
+            ]
+        }
+    }
+]
